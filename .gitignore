@@ -1,0 +1,22 @@
+# Node / frontend
+node_modules/
+.next/
+out/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Env
+.env
+
+# DB backups / logs
+backups/
+logs/
+
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/
+
