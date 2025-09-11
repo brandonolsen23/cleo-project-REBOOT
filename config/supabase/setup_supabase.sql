@@ -158,13 +158,7 @@ CREATE TABLE IF NOT EXISTS property_identifiers (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-DO $$
-BEGIN
-  ALTER TABLE property_identifiers
-  ADD CONSTRAINT uq_property_identifiers_pair UNIQUE (id_type, id_value);
-EXCEPTION WHEN duplicate_object THEN
-  NULL;
-END $$;
+CREATE UNIQUE INDEX IF NOT EXISTS uq_property_identifiers_pair_idx ON property_identifiers (id_type, id_value);
 CREATE INDEX IF NOT EXISTS idx_property_identifiers_property ON property_identifiers (property_id);
 
 -- Staging for transaction ingestion

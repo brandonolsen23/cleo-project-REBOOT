@@ -3,6 +3,7 @@ import json
 import re
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
+from typing import Optional
 
 
 PRICE_RE = re.compile(r"[^0-9.]")

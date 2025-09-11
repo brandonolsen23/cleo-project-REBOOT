@@ -33,15 +33,17 @@ def load_json(path: str) -> List[Dict[str, Any]]:
         return data
 
 
-def upsert_staging(cur, source: str, source_hash: str, raw: dict):
+def upsert_staging(cur, source: str, source_hash: str, raw: dict) -> bool:
     cur.execute(
         """
         INSERT INTO stg_transactions (source, source_hash, raw)
         VALUES (%s, %s, %s)
         ON CONFLICT (source_hash) DO NOTHING
+        RETURNING 1
         """,
         (source, source_hash, Json(raw)),
     )
+    return cur.fetchone() is not None
 
 
 def find_or_create_property(cur, addr_hash_raw: str, address: str, city: str,
@@ -96,7 +98,7 @@ def find_or_create_property(cur, addr_hash_raw: str, address: str, city: str,
     return prop_id
 
 
-def upsert_transaction(cur, tx: Dict[str, Any], prop_id: Optional[str], details: dict):
+def upsert_transaction(cur, tx: Dict[str, Any], details: dict) -> Tuple[bool, Optional[str]]:
     columns = (
         "source", "source_id", "source_hash", "property_id", "transaction_date", "transaction_type", "price",
         "arn", "pin", "address_raw", "city_raw", "address_hash_raw", "address_canonical", "address_hash",
@@ -107,21 +109,48 @@ def upsert_transaction(cur, tx: Dict[str, Any], prop_id: Optional[str], details:
         "seller_contact_first_name", "seller_contact_last_name", "seller_phone",
         "brokerage_name", "brokerage_phone", "site", "site_area_acres", "site_area_sqft", "relationship", "description", "source_url", "details"
     )
-
     placeholders = ", ".join(["%s"] * len(columns))
-    assignments = ", ".join([f"{c} = EXCLUDED.{c}" for c in columns if c not in ("source_hash",)])
-
     values = tuple(tx.get(c) for c in columns[:-1]) + (Json(details),)
 
+    # Try insert first; detect if new via RETURNING id
     cur.execute(
         f"""
         INSERT INTO transactions ({', '.join(columns)})
         VALUES ({placeholders})
-        ON CONFLICT (source_hash) DO UPDATE SET
-        {assignments}
+        ON CONFLICT (source_hash) DO NOTHING
+        RETURNING id
         """,
         values,
     )
+    row = cur.fetchone()
+    if row:
+        return True, row[0]
+
+    # Existing: update selected columns to keep data fresh
+    update_cols = [
+        "property_id", "transaction_date", "transaction_type", "price",
+        "arn", "pin", "address_raw", "city_raw", "address_hash_raw", "address_canonical", "address_hash",
+        "alt_address1", "alt_address2", "alt_address3",
+        "buyer_name", "buyer_address", "buyer_alt_name1", "buyer_alt_name2", "buyer_alt_name3",
+        "buyer_contact_first_name", "buyer_contact_last_name", "buyer_phone",
+        "seller_name", "seller_address", "seller_alt_name1", "seller_alt_name2", "seller_alt_name3",
+        "seller_contact_first_name", "seller_contact_last_name", "seller_phone",
+        "brokerage_name", "brokerage_phone", "site", "site_area_acres", "site_area_sqft", "relationship", "description", "source_url", "details"
+    ]
+    set_clause = ", ".join([f"{c} = %s" for c in update_cols])
+    update_values = tuple(tx.get(c) for c in update_cols[:-1]) + (Json(details),) + (tx.get("source_hash"),)
+
+    cur.execute(
+        f"""
+        UPDATE transactions
+        SET {set_clause}
+        WHERE source_hash = %s
+        RETURNING id
+        """,
+        update_values,
+    )
+    row = cur.fetchone()
+    return False, (row[0] if row else None)
 
 
 def main():
@@ -144,14 +173,18 @@ def main():
         return
 
     conn = get_db()
-    inserted = 0
-    updated = 0
-    skipped = 0
+    tx_inserted = 0
+    tx_duplicates = 0
+    stg_inserted = 0
+    stg_duplicates = 0
     with conn:
         with conn.cursor() as cur:
             for rec in data:
                 source_hash = compute_source_hash(rec)
-                upsert_staging(cur, "realtrack", source_hash, rec)
+                if upsert_staging(cur, "realtrack", source_hash, rec):
+                    stg_inserted += 1
+                else:
+                    stg_duplicates += 1
 
                 # Build normalized payload
                 addr = rec.get("Address") or ""
@@ -220,14 +253,19 @@ def main():
                 }
 
                 # Attempt insert; ON CONFLICT means either insert or update
-                before = cur.rowcount
-                upsert_transaction(cur, tx, prop_id, details=rec)
-                after = cur.rowcount
-                # We can't rely on rowcount for upsert diff; just count
-                inserted += 1
+                is_new, _txid = upsert_transaction(cur, tx, details=rec)
+                if is_new:
+                    tx_inserted += 1
+                else:
+                    tx_duplicates += 1
 
     conn.close()
-    print(f"Processed {len(data)} records. Upserted: {inserted}. Skipped (staging duplicates): {skipped}.")
+    print(
+        "Processed {} records. New transactions: {}. Duplicates updated: {}. "
+        "New staging: {}. Existing staging: {}.".format(
+            len(data), tx_inserted, tx_duplicates, stg_inserted, stg_duplicates
+        )
+    )
 
 
 if __name__ == "__main__":

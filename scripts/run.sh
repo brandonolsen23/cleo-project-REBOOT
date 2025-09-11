@@ -4,6 +4,14 @@ set -euo pipefail
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 export ROOT_DIR
 
+# Load environment variables from .env if present
+if [ -f "$ROOT_DIR/.env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . "$ROOT_DIR/.env"
+  set +a
+fi
+
 usage() {
   cat <<EOF
 Usage: $0 <command> [args]
@@ -40,7 +48,11 @@ case "$cmd" in
     case "$subcmd" in
       realtrack)
         shift || true
-        "$ROOT_DIR/.venv/bin/python" "$ROOT_DIR/scripts/scraper/realtrack_ingest.py" "$@"
+        PYTHONPATH="$ROOT_DIR" "$ROOT_DIR/.venv/bin/python" "$ROOT_DIR/scripts/scraper/realtrack_ingest.py" "$@"
+        ;;
+      realtrack-batch)
+        shift || true
+        "$ROOT_DIR/scripts/scraper/ingest_dir.sh" "$@"
         ;;
       *)
         echo "Unknown scraper: $subcmd" >&2

@@ -41,3 +41,11 @@ Options:
 - `--dry-run` to validate JSON parsing and hashing without DB writes
 - `--limit N` to process a subset
 
+Batch ingest all JSON files in a directory:
+
+```bash
+./scripts/run.sh scraper realtrack-batch \
+  "/absolute/path/to/realtrack/output"    # directory containing *.json
+```
+
+The ingestor is idempotent (uses `source_hash`), so re-running is safe.

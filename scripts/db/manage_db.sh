@@ -20,7 +20,7 @@ fi
 sql() {
   local file=$1
   echo "Applying: $file"
-  PGPASSWORD="" psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$file"
+  psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$file"
 }
 
 backup() {
@@ -78,4 +78,3 @@ case "$cmd" in
     exit 1
     ;;
 esac
-
