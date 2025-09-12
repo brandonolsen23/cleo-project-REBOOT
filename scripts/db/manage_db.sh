@@ -17,6 +17,11 @@ if [ -z "$DATABASE_URL" ]; then
   exit 1
 fi
 
+dsn_with_port() {
+  local dsn="$1"; local port="$2"
+  echo "$dsn" | sed -E "s/:5432\//:${port}\//; s/:6543\//:${port}\//"
+}
+
 sql() {
   local file=$1
   echo "Applying: $file"
@@ -61,13 +66,15 @@ backup() {
 
 usage() {
   cat <<EOF
-Usage: $0 <init|migrate|backup|restore FILE>
+Usage: $0 <init|migrate|backup|restore FILE|health|query SQL>
 
 Commands:
   init           Apply base schema at config/supabase/setup_supabase.sql
   migrate        Apply migrations in config/supabase/migrations (if any)
   backup         Dump database to ./backups
   restore FILE   Restore from a backup file
+  health         Test connectivity to pooler (6543) and direct (5432)
+  query SQL      Run a read-only query via pooler (fallback to direct)
 EOF
 }
 
@@ -98,6 +105,37 @@ case "$cmd" in
     fi
     echo "Restoring from $file"
     psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$file"
+    ;;
+  health)
+    echo "Testing pooled (6543) connection..."
+    DSN_POOL=$(dsn_with_port "$DATABASE_URL" 6543)
+    if psql "$DSN_POOL" -v ON_ERROR_STOP=1 -c "SELECT 'pooler' AS via, now() AS ts;" >/dev/null 2>&1; then
+      echo "OK: Connected via pooler (6543)"
+    else
+      echo "FAIL: Could not connect via pooler (6543)" >&2
+    fi
+    echo "Testing direct (5432) connection..."
+    DSN_DIR=$(dsn_with_port "$DATABASE_URL" 5432)
+    if psql "$DSN_DIR" -v ON_ERROR_STOP=1 -c "SELECT 'direct' AS via, now() AS ts;" >/dev/null 2>&1; then
+      echo "OK: Connected via direct (5432)"
+    else
+      echo "FAIL: Could not connect via direct (5432)" >&2
+    fi
+    ;;
+  query)
+    shift || true
+    if [ $# -eq 0 ]; then
+      echo "Provide a SQL statement to run." >&2
+      exit 1
+    fi
+    SQL="$*"
+    DSN_POOL=$(dsn_with_port "$DATABASE_URL" 6543)
+    if psql "$DSN_POOL" -v ON_ERROR_STOP=1 -c "$SQL"; then
+      exit 0
+    fi
+    echo "Retrying on direct (5432)..."
+    DSN_DIR=$(dsn_with_port "$DATABASE_URL" 5432)
+    psql "$DSN_DIR" -v ON_ERROR_STOP=1 -c "$SQL"
     ;;
   *)
     usage

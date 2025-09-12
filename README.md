@@ -31,6 +31,15 @@ cp .env.example .env
 ```
 
 For a detailed plan, see `Cleo App Development Plan.md`.
+
+### Database helpers
+
+```bash
+./scripts/run.sh db-setup
+./scripts/run.sh db-health                             # test pooler/direct connectivity
+./scripts/run.sh db-query "SELECT COUNT(*) FROM transactions;"   # via pooler (fallback to direct)
+./scripts/run.sh db-backup
+```
 ### Ingest Realtrack JSON
 
 ```bash

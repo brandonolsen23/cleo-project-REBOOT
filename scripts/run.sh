@@ -42,6 +42,13 @@ case "$cmd" in
   db-backup)
     "$ROOT_DIR/scripts/db/manage_db.sh" backup
     ;;
+  db-health)
+    "$ROOT_DIR/scripts/db/manage_db.sh" health
+    ;;
+  db-query)
+    shift || true
+    "$ROOT_DIR/scripts/db/manage_db.sh" query "$@"
+    ;;
   standardize-properties)
     shift || true
     PYTHONPATH="$ROOT_DIR" "$ROOT_DIR/.venv/bin/python" "$ROOT_DIR/scripts/db/standardize_properties.py" "$@"

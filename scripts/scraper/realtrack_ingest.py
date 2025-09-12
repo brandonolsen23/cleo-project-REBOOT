@@ -15,6 +15,7 @@ from common.ingest_utils import (
     parse_date,
     parse_site_area,
 )
+from common.db import connect_with_retries
 
 
 def get_db() -> psycopg2.extensions.connection:
@@ -22,7 +23,7 @@ def get_db() -> psycopg2.extensions.connection:
     if not url:
         print("DATABASE_URL is not set. Add it to .env or your environment.", file=sys.stderr)
         sys.exit(1)
-    return psycopg2.connect(url)
+    return connect_with_retries(url, attempts=6, backoff_sec=1.5, prefer_pooler=True)
 
 
 def load_json(path: str) -> List[Dict[str, Any]]:
