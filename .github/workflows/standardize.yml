@@ -45,7 +45,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           set -e
-          pycmd=$(cat <<'PY'
+          NEW_DSN=$(python - <<'PY'
 import os, socket
 dsn = os.environ['DATABASE_URL']
 # Append hostaddr (IPv4) if missing to avoid IPv6-only attempts
@@ -59,19 +59,15 @@ if 'hostaddr=' not in dsn:
     except Exception:
         pass
 # Prefer pooler port 6543
-dsn = dsn.replace(':5432/', ':6543/').replace(':6543/', ':6543/')
+dsn = dsn.replace(':5432/', ':6543/')
 print(dsn)
-PY
-)
-          NEW_DSN=$(python - <<PY
-$pycmd
 PY
 )
           echo "DATABASE_URL=$NEW_DSN" >> $GITHUB_ENV
 
       - name: Canonicalize and optionally geocode
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ env.DATABASE_URL }}
           GEOCODIO_API_KEY: ${{ secrets.GEOCODIO_API_KEY }}
         run: |
           . ./.venv/bin/activate
@@ -89,7 +85,7 @@ PY
       - name: Print summary counts
         if: always()
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ env.DATABASE_URL }}
         run: |
           . ./.venv/bin/activate
           python - << 'PY'
