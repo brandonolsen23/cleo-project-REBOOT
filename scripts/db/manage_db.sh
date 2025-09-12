@@ -23,13 +23,39 @@ sql() {
   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$file"
 }
 
+resolve_pg_dump() {
+  if [ -n "${PG_DUMP:-}" ] && [ -x "$PG_DUMP" ]; then
+    echo "$PG_DUMP"
+    return
+  fi
+  # Common Homebrew path for Postgres 17
+  if [ -x "/opt/homebrew/opt/postgresql@17/bin/pg_dump" ]; then
+    echo "/opt/homebrew/opt/postgresql@17/bin/pg_dump"
+    return
+  fi
+  # Intel Homebrew path for Postgres 17
+  if [ -x "/usr/local/opt/postgresql@17/bin/pg_dump" ]; then
+    echo "/usr/local/opt/postgresql@17/bin/pg_dump"
+    return
+  fi
+  # Fallback to default
+  echo "pg_dump"
+}
+
 backup() {
   mkdir -p "$ROOT_DIR/backups"
-  local ts
+  local ts out pgd
   ts=$(date +%Y%m%d_%H%M%S)
-  local out="$ROOT_DIR/backups/cleo_${ts}.sql"
+  out="$ROOT_DIR/backups/cleo_${ts}.sql"
+  pgd=$(resolve_pg_dump)
   echo "Creating backup: $out"
-  pg_dump --no-owner --no-privileges "$DATABASE_URL" > "$out"
+  if ! "$pgd" --no-owner --no-privileges "$DATABASE_URL" > "$out" 2>"$out.err"; then
+    echo "Backup failed. You may need a pg_dump matching server v17." >&2
+    echo "Install with: brew install postgresql@17, or set PG_DUMP to the v17 binary path." >&2
+    echo "Error log at: $out.err" >&2
+    exit 1
+  fi
+  rm -f "$out.err"
   echo "Backup complete."
 }
 

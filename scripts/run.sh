@@ -42,6 +42,10 @@ case "$cmd" in
   db-backup)
     "$ROOT_DIR/scripts/db/manage_db.sh" backup
     ;;
+  standardize-properties)
+    shift || true
+    PYTHONPATH="$ROOT_DIR" "$ROOT_DIR/.venv/bin/python" "$ROOT_DIR/scripts/db/standardize_properties.py" "$@"
+    ;;
   scraper)
     shift || true
     subcmd=${1:-}
