@@ -40,6 +40,35 @@ jobs:
           pip install --upgrade pip
           pip install -r scripts/setup/requirements.txt
 
+      - name: Prefer IPv4 and pooled port
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          set -e
+          pycmd=$(cat <<'PY'
+import os, socket
+dsn = os.environ['DATABASE_URL']
+# Append hostaddr (IPv4) if missing to avoid IPv6-only attempts
+if 'hostaddr=' not in dsn:
+    try:
+        host = dsn.split('//',1)[1].split('@',1)[-1].split(':',1)[0].split('/',1)[0]
+        infos = socket.getaddrinfo(host, None, family=socket.AF_INET)
+        if infos:
+            ipv4 = infos[0][4][0]
+            dsn = (dsn + ('&' if '?' in dsn else '?') + f'hostaddr={ipv4}')
+    except Exception:
+        pass
+# Prefer pooler port 6543
+dsn = dsn.replace(':5432/', ':6543/').replace(':6543/', ':6543/')
+print(dsn)
+PY
+)
+          NEW_DSN=$(python - <<PY
+$pycmd
+PY
+)
+          echo "DATABASE_URL=$NEW_DSN" >> $GITHUB_ENV
+
       - name: Canonicalize and optionally geocode
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
