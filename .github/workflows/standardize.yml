@@ -1,0 +1,59 @@
+name: Standardize Properties
+
+on:
+  workflow_dispatch:
+    inputs:
+      canonical_limit:
+        description: Number of properties to canonicalize
+        required: true
+        default: '6000'
+      do_geocode:
+        description: Also geocode distinct canonical addresses (true/false)
+        required: true
+        default: 'false'
+      geocode_limit:
+        description: Max distinct canonical addresses to geocode
+        required: false
+        default: '2500'
+      sleep_ms:
+        description: Milliseconds to sleep between geocode calls
+        required: false
+        default: '250'
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r scripts/setup/requirements.txt
+
+      - name: Canonicalize and optionally geocode
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GEOCODIO_API_KEY: ${{ secrets.GEOCODIO_API_KEY }}
+        run: |
+          . ./.venv/bin/activate
+          if [ "${{ github.event.inputs.do_geocode }}" = "true" ]; then
+            ./scripts/run.sh standardize-properties \
+              --canonical-limit "${{ github.event.inputs.canonical_limit }}" \
+              --geocode-limit "${{ github.event.inputs.geocode_limit }}" \
+              --sleep-ms "${{ github.event.inputs.sleep_ms }}"
+          else
+            ./scripts/run.sh standardize-properties \
+              --canonical-limit "${{ github.event.inputs.canonical_limit }}" \
+              --no-geocode
+          fi
+
