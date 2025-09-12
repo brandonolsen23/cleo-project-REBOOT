@@ -48,32 +48,32 @@ def standardize_one(cur, geocoder: Geocoder, pid: str, address_line1: Optional[s
         cur.execute(
             """
             UPDATE properties
-            SET address_canonical = $1,
-                address_hash = $2,
-                latitude = $3,
-                longitude = $4,
-                geocode_source = $5,
-                geocode_accuracy = $6,
-                city = COALESCE(city, $7),
-                province = COALESCE(province, $8),
-                country = COALESCE(country, $9),
-                geom = ST_SetSRID(ST_MakePoint($4, $3), 4326)::geography
-            WHERE id = $10
-            """.replace("$", "%"),
-            (canonical, address_hash, lat, lng, geocode_source, accuracy, city, province, country, pid),
+            SET address_canonical = %s,
+                address_hash = %s,
+                latitude = %s,
+                longitude = %s,
+                geocode_source = %s,
+                geocode_accuracy = %s,
+                city = COALESCE(city, %s),
+                province = COALESCE(province, %s),
+                country = COALESCE(country, %s),
+                geom = ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography
+            WHERE id = %s
+            """,
+            (canonical, address_hash, lat, lng, geocode_source, accuracy, city, province, country, lng, lat, pid),
         )
     else:
         # No coordinates; still set canonical + hash
         cur.execute(
             """
             UPDATE properties
-            SET address_canonical = $1,
-                address_hash = $2,
-                city = COALESCE(city, $3),
-                province = COALESCE(province, $4),
-                country = COALESCE(country, $5)
-            WHERE id = $6
-            """.replace("$", "%"),
+            SET address_canonical = %s,
+                address_hash = %s,
+                city = COALESCE(city, %s),
+                province = COALESCE(province, %s),
+                country = COALESCE(country, %s)
+            WHERE id = %s
+            """,
             (canonical, address_hash, city, province, country, pid),
         )
 
@@ -91,14 +91,14 @@ def geocode_by_canonical(cur, geocoder: Geocoder, canonical: str, country: str =
     cur.execute(
         """
         UPDATE properties
-        SET latitude = $1,
-            longitude = $2,
+        SET latitude = %s,
+            longitude = %s,
             geocode_source = 'geocodio',
-            geocode_accuracy = $3,
-            geom = ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography
-        WHERE address_canonical = $4 AND latitude IS NULL
-        """.replace("$", "%"),
-        (lat, lng, accuracy, canonical),
+            geocode_accuracy = %s,
+            geom = ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography
+        WHERE address_canonical = %s AND latitude IS NULL
+        """,
+        (lat, lng, accuracy, lng, lat, canonical),
     )
     return True
 
