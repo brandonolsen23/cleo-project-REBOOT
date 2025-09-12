@@ -57,3 +57,30 @@ jobs:
               --no-geocode
           fi
 
+      - name: Print summary counts
+        if: always()
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          . ./.venv/bin/activate
+          python - << 'PY'
+          import os, time
+          import psycopg2
+          dsn = os.environ['DATABASE_URL']
+          last_err = None
+          for i in range(6):
+            try:
+              with psycopg2.connect(dsn) as conn:
+                with conn.cursor() as cur:
+                  cur.execute("SELECT COUNT(*) FROM properties")
+                  total = cur.fetchone()[0]
+                  cur.execute("SELECT COUNT(*) FROM properties WHERE address_hash IS NOT NULL")
+                  canon = cur.fetchone()[0]
+                  missing = total - canon
+                  print(f"Counts Summary: total={total}, canonicalized={canon}, missing={missing}")
+                  raise SystemExit(0)
+            except Exception as e:
+              last_err = e
+              time.sleep(1.5 * (i + 1))
+          raise SystemExit(f"Failed to print counts after retries: {last_err}")
+          PY
