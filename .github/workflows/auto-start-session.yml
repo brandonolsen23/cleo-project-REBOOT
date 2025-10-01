@@ -1,0 +1,42 @@
+name: auto-start-session
+on:
+  schedule:
+    - cron: "0 13 * * 1-5" # 09:00 America/Toronto during EDT (Mon-Fri)
+    - cron: "0 14 * * 1-5" # 09:00 America/Toronto during EST (Mon-Fri)
+  workflow_dispatch:
+
+jobs:
+  start:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure git
+        run: |
+          git config user.name "codex-bot"
+          git config user.email "codex-bot@users.noreply.github.com"
+      - name: Determine branch names
+        id: names
+        run: |
+          DATE=$(date -u +%F)
+          BRANCH="ses/${DATE}-auto"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+      - name: Ensure main is up to date
+        run: |
+          git checkout main
+          git pull --ff-only
+      - name: Create or reuse session branch and start tag
+        run: |
+          BRANCH="${{ steps.names.outputs.branch }}"
+          if git rev-parse --verify "$BRANCH" >/dev/null 2>&1; then
+            echo "Branch exists: $BRANCH"
+          else
+            git checkout -b "$BRANCH"
+            git commit --allow-empty -m "chore(session): start $BRANCH"
+            git push -u origin "$BRANCH"
+          fi
+          # Tag start (UTC time embedded)
+          TAG="cp/$(date -u +%F-%H%M)-start"
+          git tag -a "$TAG" -m "auto session start $BRANCH" || true
+          git push origin "$TAG" || true

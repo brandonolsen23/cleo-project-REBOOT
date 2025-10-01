@@ -1,0 +1,54 @@
+name: auto-end-session
+on:
+  schedule:
+    - cron: "30 3 * * 1-5"  # 23:30 America/Toronto during EDT (Mon-Fri)
+    - cron: "30 4 * * 1-5"  # 23:30 America/Toronto during EST (Mon-Fri)
+  workflow_dispatch:
+
+jobs:
+  end:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure git
+        run: |
+          git config user.name "codex-bot"
+          git config user.email "codex-bot@users.noreply.github.com"
+      - name: Determine today’s session branch (UTC)
+        id: names
+        run: |
+          DATE=$(date -u +%F)
+          BRANCH="ses/${DATE}-auto"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+      - name: Fetch all
+        run: |
+          git fetch --all --tags
+      - name: Squash-merge session branch into main if it exists
+        run: |
+          BRANCH="${{ steps.names.outputs.branch }}"
+          if git rev-parse --verify "origin/$BRANCH" >/dev/null 2>&1; then
+            git checkout main
+            git pull --ff-only
+            git merge --squash "origin/$BRANCH" || true
+            if ! git diff --cached --quiet; then
+              git commit -m "feat: merge ${BRANCH} (auto squash)"
+              git push origin main
+            else
+              echo "No staged changes to commit from ${BRANCH}."
+            fi
+            # Tag release on main
+            REL="rel/$(date -u +%F-%H%M)-auto"
+            git tag -a "$REL" -m "auto release after ${BRANCH}" || true
+            git push origin "$REL" || true
+            # Delete remote branch
+            git push origin --delete "$BRANCH" || true
+          else
+            echo "No session branch found for today ($BRANCH). Skipping."
+          fi
+      - name: End-of-day checkpoint tag on whatever HEAD is
+        run: |
+          TAG="cp/$(date -u +%F-%H%M)-auto-end"
+          git tag -a "$TAG" -m "auto end-of-day checkpoint" || true
+          git push origin "$TAG" || true
