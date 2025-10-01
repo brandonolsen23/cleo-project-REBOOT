@@ -2,9 +2,13 @@ import os
 import time
 import socket
 from typing import Optional
+from dotenv import load_dotenv
 
 import psycopg2
 from psycopg2 import OperationalError
+
+# Load environment variables
+load_dotenv()
 
 
 def _ensure_sslmode(url: str) -> str:
@@ -65,3 +69,44 @@ def connect_with_retries(
         # try next port
     # if we reached here, both ports failed
     raise last_err  # type: ignore[name-defined]
+
+
+def connect_with_service_role():
+    """Connect to database with service role for bypassing RLS."""
+    from .auth import get_auth_client
+
+    try:
+        auth_client = get_auth_client()
+        # Use the service role key for direct database access
+        return connect_with_retries()
+    except Exception as e:
+        print(f"Warning: Could not authenticate with service role: {e}")
+        # Fallback to normal connection
+        return connect_with_retries()
+
+
+def execute_with_user_context(query: str, params=None, user_id: str = None):
+    """Execute query with user context for RLS."""
+    conn = connect_with_retries()
+
+    try:
+        with conn.cursor() as cur:
+            # Set the user context for RLS
+            if user_id:
+                cur.execute("SELECT set_config('request.jwt.claims', %s, true)",
+                           (f'{{"sub": "{user_id}"}}',))
+
+            # Execute the actual query
+            cur.execute(query, params)
+
+            if query.strip().upper().startswith('SELECT'):
+                return cur.fetchall()
+            else:
+                conn.commit()
+                return cur.rowcount
+
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        conn.close()

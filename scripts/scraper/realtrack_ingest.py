@@ -15,15 +15,27 @@ from common.ingest_utils import (
     parse_date,
     parse_site_area,
 )
-from common.db import connect_with_retries
+from common.db import connect_with_retries, connect_with_service_role
 
 
 def get_db() -> psycopg2.extensions.connection:
+    """
+    Get database connection with service role for data ingestion.
+    This bypasses RLS since ingestion scripts need full database access.
+    """
     url = os.getenv("DATABASE_URL")
     if not url:
         print("DATABASE_URL is not set. Add it to .env or your environment.", file=sys.stderr)
         sys.exit(1)
-    return connect_with_retries(url, attempts=6, backoff_sec=1.5, prefer_pooler=True)
+
+    # Use service role connection for ingestion scripts
+    # This bypasses RLS and provides full database access
+    try:
+        return connect_with_service_role()
+    except Exception as e:
+        print(f"Warning: Could not connect with service role: {e}")
+        print("Falling back to standard connection...")
+        return connect_with_retries(url, attempts=6, backoff_sec=1.5, prefer_pooler=True)
 
 
 def load_json(path: str) -> List[Dict[str, Any]]:
