@@ -1,83 +1,54 @@
-import { createServerSupabase } from '@/lib/supabase'
-import { UserProfile } from '@/lib/auth'
+'use client'
 
-export default async function DashboardPage() {
-  const supabase = createServerSupabase()
+import { Card, Col, Row, Typography, Badge } from 'antd'
+import { HomeOutlined, FileTextOutlined, CheckCircleOutlined } from '@ant-design/icons'
+import Link from 'next/link'
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+const { Title, Text, Paragraph } = Typography
 
-  let profile: UserProfile | null = null
-
-  if (session?.user) {
-    const { data } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('id', session.user.id)
-      .single()
-
-    profile = data
-  }
-
+export default function DashboardPage() {
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Dashboard</h1>
+      <Title level={2}>Dashboard</Title>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Welcome</h3>
-          <p className="text-gray-600">
-            {profile?.full_name || session?.user.email}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">
-            Role: {profile?.role}
-          </p>
-        </div>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={24} md={8}>
+          <Card>
+            <Title level={4}>Welcome</Title>
+            <Paragraph>
+              Cleo Real Estate Platform
+            </Paragraph>
+          </Card>
+        </Col>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Quick Actions</h3>
-          <div className="space-y-2">
-            <a
-              href="/dashboard/properties"
-              className="block text-indigo-600 hover:text-indigo-800"
-            >
-              View Properties
-            </a>
-            <a
-              href="/dashboard/transactions"
-              className="block text-indigo-600 hover:text-indigo-800"
-            >
-              View Transactions
-            </a>
-            {profile?.role === 'admin' && (
-              <a
-                href="/admin/users"
-                className="block text-indigo-600 hover:text-indigo-800"
-              >
-                Manage Users
-              </a>
-            )}
-          </div>
-        </div>
+        <Col xs={24} sm={24} md={8}>
+          <Card title="Quick Actions">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <Link href="/dashboard/properties" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <HomeOutlined />
+                <Text>View Properties</Text>
+              </Link>
+              <Link href="/dashboard/transactions" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileTextOutlined />
+                <Text>View Transactions</Text>
+              </Link>
+            </div>
+          </Card>
+        </Col>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">System Status</h3>
-          <div className="flex items-center text-green-600">
-            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-            All systems operational
-          </div>
-        </div>
-      </div>
+        <Col xs={24} sm={24} md={8}>
+          <Card title="System Status">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Badge status="success" />
+              <Text type="success">All systems operational</Text>
+            </div>
+          </Card>
+        </Col>
+      </Row>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
-        </div>
-        <div className="p-6">
-          <p className="text-gray-500">No recent activity to display.</p>
-        </div>
-      </div>
+      <Card title="Recent Activity">
+        <Text type="secondary">No recent activity to display.</Text>
+      </Card>
     </div>
   )
 }

@@ -1,41 +1,42 @@
-import { createServerSupabase } from '@/lib/supabase'
-import { redirect } from 'next/navigation'
-import UserMenu from '@/components/auth/UserMenu'
+'use client'
 
-export default async function DashboardLayout({
+import { Layout } from 'antd'
+
+const { Header, Content } = Layout
+
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const supabase = createServerSupabase()
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-
-  if (!session) {
-    redirect('/login')
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-indigo-600">Cleo</h1>
-              <span className="ml-2 text-sm text-gray-500">Real Estate Data Platform</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <UserMenu user={session.user} />
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Layout style={{ minHeight: '100vh' }}>
+      <Header style={{
+        display: 'flex',
+        alignItems: 'center',
+        background: '#fff',
+        borderBottom: '1px solid #f0f0f0',
+        padding: '0 50px'
+      }}>
+        <h1 style={{
+          fontSize: '24px',
+          fontWeight: 'bold',
+          color: '#4f46e5',
+          margin: 0
+        }}>
+          Cleo
+        </h1>
+        <span style={{
+          marginLeft: '12px',
+          fontSize: '14px',
+          color: '#8c8c8c'
+        }}>
+          Real Estate Data Platform
+        </span>
+      </Header>
+      <Content style={{ padding: '24px 50px' }}>
         {children}
-      </div>
-    </div>
+      </Content>
+    </Layout>
   )
 }
