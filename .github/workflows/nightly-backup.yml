@@ -1,0 +1,23 @@
+name: nightly-backup
+on:
+  schedule:
+    - cron: "17 3 * * *"  # ~03:17 UTC nightly
+  workflow_dispatch:
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create timestamped ZIP
+        run: |
+          REPO_NAME=$(basename "${GITHUB_REPOSITORY}")
+          DATE=$(date +%F-%H%M%S)
+          zip -r "${REPO_NAME}-nightly-${DATE}.zip" . -x ".git/*"
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-backup
+          path: "*.zip"
+          retention-days: 30
