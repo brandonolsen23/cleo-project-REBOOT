@@ -58,3 +58,32 @@ Batch ingest all JSON files in a directory:
 ```
 
 The ingestor is idempotent (uses `source_hash`), so re-running is safe.
+
+## Solo Session Flow (One-Person Safety Nets)
+
+This repo uses a lightweight solo flow so I can vibe-code safely:
+
+- Work mostly on `main`.
+- Each day at **09:00 Toronto**, CI creates a session branch `ses/YYYY-MM-DD-auto` and a start checkpoint tag.
+- Each night at **23:30 Toronto**, CI will:
+  - squash-merge that session branch into `main` (if there were commits),
+  - create a release tag `rel/YYYY-MM-DD-HHMM-auto`,
+  - delete the session branch.
+- Every push uploads a ZIP artifact. There’s also a nightly backup ZIP.
+
+Manual scripts (local):
+```bash
+./scripts/start_session.sh my-desc     # Start a manual session branch
+./scripts/checkpoint.sh msg             # Make a checkpoint tag + WIP commit
+./scripts/end_session.sh                # Squash-merge back to main + release tag
+```
+
+Note: GitHub’s cron runs in UTC. We schedule both EDT and EST times to cover DST automatically.
+
+Suggested git aliases for faster solo flow:
+```ini
+[alias]
+  st = status -sb
+  lg = log --oneline --graph --decorate --all
+  wip = !f(){ d=$(date +%F-%H%M); git add -A && git commit -m "wip: $d"; }; f
+```

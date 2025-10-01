@@ -1,0 +1,22 @@
+name: artifact-on-push
+on:
+  push:
+    branches: ["**"]
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create ZIP
+        run: |
+          REPO_NAME=$(basename "${GITHUB_REPOSITORY}")
+          DATE=$(date +%F-%H%M%S)
+          zip -r "${REPO_NAME}-${DATE}.zip" . -x ".git/*"
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-zip
+          path: "*.zip"
+          retention-days: 14
