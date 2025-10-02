@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Table, Input, Select, Card, Typography, Space, Tag, Button, message, Collapse, InputNumber, Row, Col, Modal } from 'antd'
+import { Table, Input, Select, Card, Typography, Space, Tag, Button, message, Collapse, InputNumber, Row, Col, Modal, AutoComplete } from 'antd'
 import { SearchOutlined, EnvironmentOutlined, CheckCircleOutlined, CloseCircleOutlined, FilterOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -256,6 +256,7 @@ export default function PropertiesPage() {
   // Fetch unique cities for filter dropdown
   const [cities, setCities] = useState<string[]>([])
   const fetchCities = async () => {
+    console.log('Fetching cities...')
     // Fetch all cities by using a large limit
     const { data, error } = await supabase
       .from('properties')
@@ -267,13 +268,15 @@ export default function PropertiesPage() {
 
     if (error) {
       console.error('Error fetching cities:', error)
+      console.error('Error details:', error.message, error.details, error.hint)
       return
     }
 
     if (data) {
       const uniqueCities = Array.from(new Set(data.map(p => p.city).filter(Boolean))) as string[]
-      console.log(`Loaded ${uniqueCities.length} unique cities`)
+      console.log(`Loaded ${uniqueCities.length} unique cities:`, uniqueCities.slice(0, 10), '...')
       setCities(uniqueCities)
+      console.log('Cities state updated, length:', uniqueCities.length)
     }
   }
 
@@ -544,21 +547,26 @@ export default function PropertiesPage() {
         </div>
         <Space wrap size="middle">
           {/* City Filter */}
-          <Select
-            placeholder="City"
-            style={{ minWidth: 150 }}
-            size="large"
-            allowClear
-            value={cityFilter}
-            onChange={setCityFilter}
-            showSearch
-            virtual
-            listHeight={400}
-            options={cities.map(city => ({ label: city, value: city }))}
-            filterOption={(input, option) =>
-              (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
-            }
-          />
+          <select
+            value={cityFilter || ''}
+            onChange={(e) => setCityFilter(e.target.value || undefined)}
+            style={{
+              minWidth: 150,
+              height: 40,
+              padding: '4px 11px',
+              fontSize: 16,
+              border: '1px solid #d9d9d9',
+              borderRadius: 6,
+              cursor: 'pointer'
+            }}
+          >
+            <option value="">City</option>
+            {cities.map(city => (
+              <option key={city} value={city}>
+                {city}
+              </option>
+            ))}
+          </select>
 
           {/* Brand Filter */}
           <Select
