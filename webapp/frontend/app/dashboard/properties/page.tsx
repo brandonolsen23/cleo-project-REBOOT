@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Table, Input, Select, Card, Typography, Space, Tag, Button, message } from 'antd'
-import { SearchOutlined, EnvironmentOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import { Table, Input, Select, Card, Typography, Space, Tag, Button, message, Collapse, InputNumber, Row, Col, Modal } from 'antd'
+import { SearchOutlined, EnvironmentOutlined, CheckCircleOutlined, CloseCircleOutlined, FilterOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { ColumnsType } from 'antd/es/table'
@@ -25,6 +25,12 @@ interface Property {
   created_at: string
   updated_at: string
   brands?: { name: string }[]
+  latest_transaction?: {
+    transaction_date: string | null
+    price: number | null
+    buyer_name: string | null
+    seller_name: string | null
+  } | null
 }
 
 export default function PropertiesPage() {
@@ -34,8 +40,55 @@ export default function PropertiesPage() {
   const [searchText, setSearchText] = useState('')
   const [cityFilter, setCityFilter] = useState<string | undefined>(undefined)
   const [brandFilter, setBrandFilter] = useState<string | undefined>(undefined)
+  const [buyerFilter, setBuyerFilter] = useState<string | undefined>(undefined)
+  const [sellerFilter, setSellerFilter] = useState<string | undefined>(undefined)
+  const [minPrice, setMinPrice] = useState<number | undefined>(undefined)
+  const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined)
   const [geocodedFilter, setGeocodedFilter] = useState<string | undefined>(undefined)
   const [pagination, setPagination] = useState({ current: 1, pageSize: 20, total: 0 })
+
+  // Price range options starting at 500k
+  const priceOptions = [
+    { label: '$0', value: 0 },
+    { label: '$500,000', value: 500000 },
+    { label: '$1,000,000', value: 1000000 },
+    { label: '$1,500,000', value: 1500000 },
+    { label: '$2,000,000', value: 2000000 },
+    { label: '$2,500,000', value: 2500000 },
+    { label: '$3,000,000', value: 3000000 },
+    { label: '$3,500,000', value: 3500000 },
+    { label: '$4,000,000', value: 4000000 },
+    { label: '$4,500,000', value: 4500000 },
+    { label: '$5,000,000', value: 5000000 },
+    { label: '$5,500,000', value: 5500000 },
+    { label: '$6,000,000', value: 6000000 },
+    { label: '$6,500,000', value: 6500000 },
+    { label: '$7,000,000', value: 7000000 },
+    { label: '$7,500,000', value: 7500000 },
+    { label: '$8,000,000', value: 8000000 },
+    { label: '$8,500,000', value: 8500000 },
+    { label: '$9,000,000', value: 9000000 },
+    { label: '$9,500,000', value: 9500000 },
+    { label: '$10,000,000', value: 10000000 },
+    { label: '$20,000,000', value: 20000000 },
+    { label: '$30,000,000', value: 30000000 },
+    { label: '$40,000,000', value: 40000000 },
+    { label: '$50,000,000', value: 50000000 },
+    { label: '$60,000,000', value: 60000000 },
+    { label: '$70,000,000', value: 70000000 },
+    { label: '$80,000,000', value: 80000000 },
+    { label: '$90,000,000', value: 90000000 },
+    { label: '$100,000,000', value: 100000000 },
+    { label: '$200,000,000', value: 200000000 },
+    { label: '$300,000,000', value: 300000000 },
+    { label: '$400,000,000', value: 400000000 },
+    { label: '$500,000,000', value: 500000000 },
+    { label: '$600,000,000', value: 600000000 },
+    { label: '$700,000,000', value: 700000000 },
+    { label: '$800,000,000', value: 800000000 },
+    { label: '$900,000,000', value: 900000000 },
+    { label: '$1,000,000,000', value: 1000000000 },
+  ]
 
   // Fetch properties from Supabase
   const fetchProperties = async () => {
@@ -62,6 +115,12 @@ export default function PropertiesPage() {
             *,
             property_brand_links!inner(
               brands!inner(name)
+            ),
+            transactions!property_id(
+              transaction_date,
+              price,
+              buyer_name,
+              seller_name
             )
           `, { count: 'exact' })
           .eq('property_brand_links.brands.name', brandFilter)
@@ -75,6 +134,12 @@ export default function PropertiesPage() {
             *,
             property_brand_links(
               brands(name)
+            ),
+            transactions!property_id(
+              transaction_date,
+              price,
+              buyer_name,
+              seller_name
             )
           `, { count: 'exact' })
           .eq('province', 'ON')
@@ -135,10 +200,48 @@ export default function PropertiesPage() {
         }
       })
 
-      const transformedData = (data || []).map((property: any) => ({
-        ...property,
-        brands: brandsByProperty.get(property.id) || []
-      }))
+      let transformedData = (data || []).map((property: any) => {
+        // Get the latest transaction (transactions are sorted by date DESC in the query)
+        const latestTransaction = property.transactions && property.transactions.length > 0
+          ? property.transactions.reduce((latest: any, current: any) => {
+              if (!latest) return current
+              if (!current.transaction_date) return latest
+              if (!latest.transaction_date) return current
+              return new Date(current.transaction_date) > new Date(latest.transaction_date) ? current : latest
+            }, null)
+          : null
+
+        return {
+          ...property,
+          brands: brandsByProperty.get(property.id) || [],
+          latest_transaction: latestTransaction
+        }
+      })
+
+      // Apply client-side filters for buyer, seller, and price range
+      if (buyerFilter) {
+        transformedData = transformedData.filter(p =>
+          p.latest_transaction?.buyer_name?.toLowerCase().includes(buyerFilter.toLowerCase())
+        )
+      }
+
+      if (sellerFilter) {
+        transformedData = transformedData.filter(p =>
+          p.latest_transaction?.seller_name?.toLowerCase().includes(sellerFilter.toLowerCase())
+        )
+      }
+
+      if (minPrice !== undefined) {
+        transformedData = transformedData.filter(p =>
+          p.latest_transaction?.price && p.latest_transaction.price >= minPrice
+        )
+      }
+
+      if (maxPrice !== undefined) {
+        transformedData = transformedData.filter(p =>
+          p.latest_transaction?.price && p.latest_transaction.price <= maxPrice
+        )
+      }
 
       setProperties(transformedData)
       setPagination(prev => ({ ...prev, total: count || 0 }))
@@ -153,15 +256,23 @@ export default function PropertiesPage() {
   // Fetch unique cities for filter dropdown
   const [cities, setCities] = useState<string[]>([])
   const fetchCities = async () => {
+    // Fetch all cities by using a large limit
     const { data, error } = await supabase
       .from('properties')
       .select('city')
       .eq('province', 'ON')
       .not('city', 'is', null)
       .order('city')
+      .limit(10000) // Get all cities
 
-    if (data && !error) {
+    if (error) {
+      console.error('Error fetching cities:', error)
+      return
+    }
+
+    if (data) {
       const uniqueCities = Array.from(new Set(data.map(p => p.city).filter(Boolean))) as string[]
+      console.log(`Loaded ${uniqueCities.length} unique cities`)
       setCities(uniqueCities)
     }
   }
@@ -179,19 +290,82 @@ export default function PropertiesPage() {
     }
   }
 
+  // Fetch unique buyers for filter dropdown
+  const [buyers, setBuyers] = useState<string[]>([])
+  const fetchBuyers = async () => {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('buyer_name')
+      .not('buyer_name', 'is', null)
+      .order('buyer_name')
+      .limit(10000)
+
+    if (error) {
+      console.error('Error fetching buyers:', error)
+      return
+    }
+
+    if (data) {
+      const uniqueBuyers = Array.from(new Set(data.map(t => t.buyer_name).filter(Boolean))) as string[]
+      console.log(`Loaded ${uniqueBuyers.length} unique buyers`)
+      setBuyers(uniqueBuyers)
+    }
+  }
+
+  // Fetch unique sellers for filter dropdown
+  const [sellers, setSellers] = useState<string[]>([])
+  const fetchSellers = async () => {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('seller_name')
+      .not('seller_name', 'is', null)
+      .order('seller_name')
+      .limit(10000)
+
+    if (error) {
+      console.error('Error fetching sellers:', error)
+      return
+    }
+
+    if (data) {
+      const uniqueSellers = Array.from(new Set(data.map(t => t.seller_name).filter(Boolean))) as string[]
+      console.log(`Loaded ${uniqueSellers.length} unique sellers:`, uniqueSellers)
+      setSellers(uniqueSellers)
+    }
+  }
+
   useEffect(() => {
-    fetchCities()
-    fetchBrands()
+    const loadFilters = async () => {
+      await fetchCities()
+      await fetchBrands()
+      await fetchBuyers()
+      await fetchSellers()
+
+      // Debug log after all fetches complete
+      setTimeout(() => {
+        console.log('=== FILTER DATA DEBUG ===')
+        console.log('Cities array:', cities)
+        console.log('Brands array:', brands)
+        console.log('Buyers array:', buyers)
+        console.log('Sellers array:', sellers)
+      }, 1000)
+    }
+    loadFilters()
   }, [])
 
   useEffect(() => {
     fetchProperties()
-  }, [pagination.current, pagination.pageSize, cityFilter, brandFilter, geocodedFilter, searchText])
+  }, [pagination.current, pagination.pageSize, cityFilter, brandFilter, geocodedFilter, searchText, buyerFilter, sellerFilter, minPrice, maxPrice])
 
   const columns: ColumnsType<Property> = [
     {
       title: 'Address',
       key: 'address',
+      sorter: (a, b) => {
+        const addrA = (a.address_canonical || a.address_line1 || '').toLowerCase()
+        const addrB = (b.address_canonical || b.address_line1 || '').toLowerCase()
+        return addrA.localeCompare(addrB)
+      },
       render: (_, record) => {
         const fullAddress = record.address_canonical || record.address_line1 || 'N/A'
 
@@ -218,48 +392,91 @@ export default function PropertiesPage() {
           </div>
         )
       },
-      width: '45%',
+      width: '25%',
     },
     {
       title: 'City',
       dataIndex: 'city',
       key: 'city',
-      width: '20%',
+      sorter: (a, b) => (a.city || '').localeCompare(b.city || ''),
+      width: '12%',
+    },
+    {
+      title: 'Sale Date',
+      key: 'sale_date',
+      sorter: (a, b) => {
+        const dateA = a.latest_transaction?.transaction_date ? new Date(a.latest_transaction.transaction_date).getTime() : 0
+        const dateB = b.latest_transaction?.transaction_date ? new Date(b.latest_transaction.transaction_date).getTime() : 0
+        return dateA - dateB
+      },
+      render: (_, record) => {
+        const date = record.latest_transaction?.transaction_date
+        return date ? new Date(date).toLocaleDateString('en-CA') : '-'
+      },
+      width: '10%',
+    },
+    {
+      title: 'Sale Price',
+      key: 'sale_price',
+      sorter: (a, b) => {
+        const priceA = a.latest_transaction?.price || 0
+        const priceB = b.latest_transaction?.price || 0
+        return priceA - priceB
+      },
+      render: (_, record) => {
+        const price = record.latest_transaction?.price
+        return price ? `$${price.toLocaleString()}` : '-'
+      },
+      width: '12%',
     },
     {
       title: 'Brands',
       key: 'brands',
-      width: '25%',
+      sorter: (a, b) => {
+        const brandA = a.brands?.[0]?.name || ''
+        const brandB = b.brands?.[0]?.name || ''
+        return brandA.localeCompare(brandB)
+      },
       render: (_, record) => {
         if (!record.brands || record.brands.length === 0) {
           return <span style={{ fontSize: '12px', color: '#8c8c8c' }}>-</span>
         }
         return (
           <Space size={[0, 4]} wrap>
-            {record.brands.slice(0, 3).map((brand, idx) => (
+            {record.brands.slice(0, 2).map((brand, idx) => (
               <Tag key={idx} color="blue" style={{ fontSize: '11px' }}>
                 {brand.name}
               </Tag>
             ))}
-            {record.brands.length > 3 && (
-              <Tag style={{ fontSize: '11px' }}>+{record.brands.length - 3} more</Tag>
+            {record.brands.length > 2 && (
+              <Tag style={{ fontSize: '11px' }}>+{record.brands.length - 2}</Tag>
             )}
           </Space>
         )
       },
+      width: '13%',
     },
     {
-      title: 'Action',
-      key: 'action',
-      width: '10%',
-      render: (_, record) => (
-        <Button
-          type="link"
-          onClick={() => router.push(`/dashboard/properties/${record.id}`)}
-        >
-          View
-        </Button>
-      ),
+      title: 'Buyer',
+      key: 'buyer',
+      sorter: (a, b) => {
+        const buyerA = a.latest_transaction?.buyer_name || ''
+        const buyerB = b.latest_transaction?.buyer_name || ''
+        return buyerA.localeCompare(buyerB)
+      },
+      render: (_, record) => record.latest_transaction?.buyer_name || '-',
+      width: '12%',
+    },
+    {
+      title: 'Seller',
+      key: 'seller',
+      sorter: (a, b) => {
+        const sellerA = a.latest_transaction?.seller_name || ''
+        const sellerB = b.latest_transaction?.seller_name || ''
+        return sellerA.localeCompare(sellerB)
+      },
+      render: (_, record) => record.latest_transaction?.seller_name || '-',
+      width: '13%',
     },
   ]
 
@@ -280,8 +497,23 @@ export default function PropertiesPage() {
     setSearchText('')
     setCityFilter(undefined)
     setBrandFilter(undefined)
+    setBuyerFilter(undefined)
+    setSellerFilter(undefined)
+    setMinPrice(undefined)
+    setMaxPrice(undefined)
     setGeocodedFilter(undefined)
     setPagination(prev => ({ ...prev, current: 1 }))
+  }
+
+  const hasActiveFilters = () => {
+    return cityFilter || brandFilter || buyerFilter || sellerFilter || minPrice !== undefined || maxPrice !== undefined
+  }
+
+  const getPriceLabel = () => {
+    if (minPrice === undefined && maxPrice === undefined) return 'Price'
+    if (minPrice === undefined) return `Up to ${priceOptions.find(p => p.value === maxPrice)?.label}`
+    if (maxPrice === undefined) return `${priceOptions.find(p => p.value === minPrice)?.label}+`
+    return `${priceOptions.find(p => p.value === minPrice)?.label} - ${priceOptions.find(p => p.value === maxPrice)?.label}`
   }
 
   return (
@@ -290,48 +522,157 @@ export default function PropertiesPage() {
         <EnvironmentOutlined /> Properties
       </Title>
 
+      {/* Search Bar */}
       <Card style={{ marginBottom: 16 }}>
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-          <Space wrap>
-            <Search
-              placeholder="Search address, city, postal code..."
-              allowClear
-              enterButton={<SearchOutlined />}
-              style={{ width: 350 }}
-              onSearch={handleSearch}
-              onChange={(e) => !e.target.value && setSearchText('')}
-              value={searchText}
-            />
-            <Select
-              placeholder="Filter by City"
-              style={{ width: 180 }}
-              allowClear
-              value={cityFilter}
-              onChange={setCityFilter}
-              showSearch
-            >
-              {cities.map(city => (
-                <Select.Option key={city} value={city}>
-                  {city}
-                </Select.Option>
-              ))}
-            </Select>
-            <Select
-              placeholder="Filter by Brand"
-              style={{ width: 200 }}
-              allowClear
-              value={brandFilter}
-              onChange={setBrandFilter}
-              showSearch
-            >
-              {brands.map(brand => (
-                <Select.Option key={brand} value={brand}>
-                  {brand}
-                </Select.Option>
-              ))}
-            </Select>
-            <Button onClick={handleReset}>Reset Filters</Button>
-          </Space>
+        <Search
+          placeholder="Search address, city, postal code..."
+          allowClear
+          enterButton={<SearchOutlined />}
+          size="large"
+          style={{ width: '100%' }}
+          onSearch={handleSearch}
+          onChange={(e) => !e.target.value && setSearchText('')}
+          value={searchText}
+        />
+      </Card>
+
+      {/* Filter Buttons - Always Visible */}
+      <Card style={{ marginBottom: 16 }}>
+        {/* Debug info */}
+        <div style={{ marginBottom: 8, fontSize: 12, color: '#666' }}>
+          Loaded: {cities.length} cities, {brands.length} brands, {buyers.length} buyers, {sellers.length} sellers
+        </div>
+        <Space wrap size="middle">
+          {/* City Filter */}
+          <Select
+            placeholder="City"
+            style={{ minWidth: 150 }}
+            size="large"
+            allowClear
+            value={cityFilter}
+            onChange={setCityFilter}
+            showSearch
+            virtual
+            listHeight={400}
+            options={cities.map(city => ({ label: city, value: city }))}
+            filterOption={(input, option) =>
+              (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
+            }
+          />
+
+          {/* Brand Filter */}
+          <Select
+            placeholder="Brand"
+            style={{ minWidth: 150 }}
+            size="large"
+            allowClear
+            value={brandFilter}
+            onChange={setBrandFilter}
+            showSearch
+            virtual
+            listHeight={400}
+            options={brands.map(brand => ({ label: brand, value: brand }))}
+            filterOption={(input, option) =>
+              (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
+            }
+          />
+
+          {/* Buyer Filter */}
+          <Select
+            placeholder="Buyer"
+            style={{ minWidth: 150 }}
+            size="large"
+            allowClear
+            value={buyerFilter}
+            onChange={setBuyerFilter}
+            showSearch
+            virtual
+            listHeight={400}
+            options={buyers.map(buyer => ({ label: buyer, value: buyer }))}
+            filterOption={(input, option) =>
+              (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
+            }
+            notFoundContent={buyers.length === 0 ? "No buyers in database" : "No results"}
+          />
+
+          {/* Seller Filter */}
+          <Select
+            placeholder="Seller"
+            style={{ minWidth: 150 }}
+            size="large"
+            allowClear
+            value={sellerFilter}
+            onChange={setSellerFilter}
+            showSearch
+            virtual
+            listHeight={400}
+            options={sellers.filter(s => s && s.trim()).map(seller => ({ label: seller, value: seller }))}
+            filterOption={(input, option) =>
+              (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
+            }
+            notFoundContent={sellers.length === 0 ? "No sellers in database" : "No results"}
+          />
+
+          {/* Price Filter Dropdown */}
+          <Select
+            placeholder="Price"
+            value={getPriceLabel()}
+            size="large"
+            style={{ minWidth: 180 }}
+            popupMatchSelectWidth={450}
+            popupRender={() => (
+              <div style={{ padding: '16px' }}>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Price</Typography.Text>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>Minimum</Typography.Text>
+                    <Select
+                      placeholder="$0"
+                      style={{ width: '100%', marginTop: 4 }}
+                      value={minPrice}
+                      onChange={setMinPrice}
+                      popupMatchSelectWidth={200}
+                      showSearch={false}
+                    >
+                      <Select.Option value={0}>$0</Select.Option>
+                      {priceOptions.slice(1).map(opt => (
+                        <Select.Option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Col>
+                  <Col span={12}>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>Maximum</Typography.Text>
+                    <Select
+                      placeholder="Unlimited"
+                      style={{ width: '100%', marginTop: 4 }}
+                      value={maxPrice}
+                      onChange={setMaxPrice}
+                      allowClear
+                      popupMatchSelectWidth={200}
+                      showSearch={false}
+                    >
+                      {priceOptions.slice(1).map(opt => (
+                        <Select.Option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Col>
+                </Row>
+              </div>
+            )}
+          >
+            <Select.Option value="price">{getPriceLabel()}</Select.Option>
+          </Select>
+
+          {/* Reset Button */}
+          {hasActiveFilters() && (
+            <Button size="large" onClick={handleReset} danger>
+              Reset All
+            </Button>
+          )}
         </Space>
       </Card>
 
