@@ -20,35 +20,21 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
 ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for user_profiles
-CREATE POLICY "Users can view own profile"
+-- Note: We use a simple policy to avoid infinite recursion
+CREATE POLICY "Users can view all profiles"
   ON public.user_profiles
   FOR SELECT
-  USING (auth.uid() = id);
+  USING (auth.role() = 'authenticated');
 
 CREATE POLICY "Users can update own profile"
   ON public.user_profiles
   FOR UPDATE
   USING (auth.uid() = id);
 
-CREATE POLICY "Admins can view all profiles"
+CREATE POLICY "Service role has full access"
   ON public.user_profiles
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.user_profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
-
-CREATE POLICY "Admins can update all profiles"
-  ON public.user_profiles
-  FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.user_profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
+  FOR ALL
+  USING (auth.role() = 'service_role');
 
 -- Insert policy for new user registration
 CREATE POLICY "Enable insert for authenticated users only"
