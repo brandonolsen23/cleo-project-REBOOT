@@ -15,6 +15,10 @@ __pycache__/
 backups/
 logs/
 
+# Large data files
+data/nar/*.parquet
+data/nar/*.sqlite
+
 # OS / Editor
 .DS_Store
 .idea/

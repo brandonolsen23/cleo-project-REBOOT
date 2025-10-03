@@ -1,0 +1,702 @@
+{
+  "total_properties": 16110,
+  "issues_found": 2886,
+  "would_fix": 266,
+  "no_fix_available": 2620,
+  "already_valid": 13224,
+  "issue_types": {
+    "invalid_city_name": 2806,
+    "unit_or_address_in_city": 70,
+    "null_or_empty_city": 10
+  },
+  "city_changes": {
+    "N. York \u2192 NORTH YORK": [
+      "003f7b5e-e042-45d3-8b28-f193d5997e13",
+      "04b2cfa2-01bb-4ec7-ba0a-6e134459b894",
+      "04f68cec-328c-413c-8fa5-71ac9984e033",
+      "05c4e06f-8a98-42a8-b6e9-00e396fd1881",
+      "0f924478-6cfe-49ab-9363-74be8a41b708",
+      "0fc7521c-2160-4e84-b0a5-7b9db0fe4c86",
+      "10444dcb-f79d-4828-8921-64fe9fef3645",
+      "13e800b4-de27-41a0-b430-1e1fa88f9e86",
+      "19c07912-4992-442c-bdc9-a037d6e0abcc",
+      "1c38109d-ebe2-4b7d-be27-d8fc1079e21c",
+      "1e1d6415-ec1f-4adb-943c-9b8d85994c3e",
+      "206b4e75-dead-431d-ac5e-4cb6e84c6dce",
+      "21c6a476-480d-40cd-ad59-fe7892e9f0ff",
+      "22ac8f68-03b5-4137-9d4f-507f15ea7619",
+      "25b241af-6f12-4d85-9df6-891be7d16771",
+      "2b1932af-96de-4f84-a8ae-8c19ae17cfb9",
+      "2c6fbc12-aee1-411b-819e-0fe5a772637b",
+      "2cc393f8-71fc-4707-833c-c6eede934cbf",
+      "2cc5fb37-7743-4ea4-921b-1f5ad88f0d30",
+      "2cd1dcfe-d28a-479a-a05f-865981442a0e",
+      "2cd6ac27-f471-488d-98b8-90053366db62",
+      "2f227f0b-8c94-4925-ad3f-b81236ffa9a8",
+      "2f62b755-0d8c-4a08-be33-dbe2e2818511",
+      "31a58d3c-4f54-4ec2-a914-a943d0eaa0c8",
+      "335c99a9-7c15-417e-b558-a71279220749",
+      "33a18370-56ae-4fd6-8b05-9dd71963cc91",
+      "3b0828d6-706a-40f4-928a-86959b402755",
+      "3b4e1e96-8812-48b7-9ce5-c6ef99c920fb",
+      "3ba2c469-1cd2-48ef-9304-2cdd4f6f616d",
+      "3c21b9b6-2231-48eb-80d4-69ae42ac258c",
+      "3d984b19-f1ea-4bb2-8d3c-ffac6461ecdb",
+      "3e48557f-a4de-40ea-9f8d-764c0d39718e",
+      "3f25e1d9-ce8b-473a-bcc7-f964faebb367",
+      "40e5677e-e918-413c-b01b-bd49473523a3",
+      "425b4166-944e-49b2-9606-168a4a280394",
+      "443710ac-f2fc-4ebd-9343-4eaf469ad97f",
+      "45be87b3-b6b8-42bc-a762-673ee476e7c8",
+      "467e30e2-9412-4629-92c6-9b1aaf19a704",
+      "4992ac44-cfb4-4212-b969-8315dc2e1920",
+      "49b85d3a-5f6f-475f-81e3-3dd005785309",
+      "4a01ce02-95f3-4ef4-9fcb-d8d9ad93ae34",
+      "4a73416c-2bf6-463d-beda-e49846f2eac1",
+      "5292741c-02cd-46e7-9f3d-259f2f24ecd7",
+      "5417d9fb-d8c6-44ba-a10f-1a9fe27c0412",
+      "56a343b8-d401-4025-b2fb-905a5b5bc934",
+      "58072b30-977d-4855-ae06-75732b1ef9b2",
+      "580e0251-d435-484d-aff7-f4f4b5f9d4af",
+      "58365f34-d664-4a44-ac58-e37fe51e14a0",
+      "586bea44-f4f1-490c-b9ba-b288f44847ce",
+      "58cdf859-7dd2-4088-afeb-0d27dada4557",
+      "58d7f5ae-ec89-454f-bde2-b2aea8b8d7d0",
+      "5bcdef5f-793d-4286-b3aa-9ea32759ec3c",
+      "5c454337-9fca-475d-9397-74cc89f87817",
+      "619df808-c50c-41d8-9ba3-f7a75099624e",
+      "619e4a54-bcde-4017-ba51-89fc2e158356",
+      "628f4e3e-730c-4f4f-9da0-a26cafe7434f",
+      "6597cb71-25db-4641-846b-67fccee7ad60",
+      "665c098f-4aef-4e75-87ae-d780b9e018ad",
+      "668dafc0-09ac-495e-ae73-710e57cc7b2e",
+      "66b789b8-723b-4bb8-b1bb-b179bf6f8199",
+      "671dfa85-ff39-4ba6-9233-0dcb43e19ab7",
+      "6735f2be-f1b6-43ac-9fbf-274ff802c626",
+      "6bae9752-eabf-43ef-a1ee-682384c142c1",
+      "6d345448-8979-45d7-af23-ac0818790d4e",
+      "6e559c0a-57b0-42b0-afc2-a04968033bf1",
+      "6ef993f4-e9e9-414d-94de-f4872ad105ac",
+      "6f977d65-8c77-4fd2-9eb8-4df1371b4bc8",
+      "70fc274b-5142-4135-b79a-6b3032894a1f",
+      "717a6c0b-c75c-47d5-b92c-40bcaf242297",
+      "71f86665-3e54-4972-98a1-c0cf44748bab",
+      "73f43bd0-fabc-4184-8de4-c275537911fd",
+      "74ed64fc-8daf-43ab-84e1-fa5086404afb",
+      "756257ce-ef53-495d-aef2-bca4ffd1259b",
+      "777f0b95-2c25-49aa-a872-ad259c2b9bc7",
+      "79549c71-4877-43ca-91ee-f709b5f13375",
+      "7cf8bd98-e068-48f3-a6d0-2ac3bd2be07d",
+      "7d52c6fb-a3e2-42fc-8709-e6fec3dd9bc4",
+      "7fceb7c8-cb83-4d46-9a3a-c4d5e9cdd451",
+      "80ff82f6-254c-4b02-9326-9b0930f46839",
+      "8566d7c2-8622-4f6c-a286-40409637f598",
+      "85e71014-a21c-4b05-aec2-fbbee6cdf531",
+      "86baabbe-603d-4b97-b0a8-936372c93939",
+      "86e52a7f-e1c7-4494-b4ee-5b447987ec03",
+      "8706a43e-bf32-421c-bfa5-1bfa5988750a",
+      "87a1b3e3-8010-4392-bdb5-d2fe2437382a",
+      "8a2794d0-a612-44ab-acd6-6716bba2a5d2",
+      "8b8dc1ab-80eb-4581-8cc3-25d00e770a76",
+      "8c9dba7d-bc00-4fd1-971b-39b87cd7bffb",
+      "8f0c02cf-5108-4445-b92e-3b47a9ae9338",
+      "90acd870-159a-4eb5-88f7-dd997e546a6f",
+      "91d65598-2439-4025-bb7e-6688f3a70853",
+      "92d9bcb3-c421-43f0-a772-cf83c4efa921",
+      "957fdcb7-609a-4d2b-b8ce-acc83a52407f",
+      "971c0410-746f-4171-b75f-7aa848cf5e81",
+      "9838ead2-d7fb-40ac-af38-f845a4955cda",
+      "98bbb8d1-3073-4f93-91d0-8083fc5eedd1",
+      "99411a2c-d04c-46c9-86df-9da2409418e1",
+      "9cc452f0-375b-4872-b1c6-154f9cc192fa",
+      "9d79f7db-ea3a-4778-b7c7-57520d048925",
+      "9ec4e69f-247c-41f4-b8de-c23506b09f9c",
+      "a0947fb7-2687-4058-9727-11c40d56c2d8",
+      "a2156c14-8eca-4a0a-816b-311d65b7de8a",
+      "a4a128b5-898b-4bf0-8ecf-8c90acbdd936",
+      "a5094adc-3df5-4ec3-9875-620ba9bd0880",
+      "a69ba099-df6e-4972-a085-246f49f86ea1",
+      "a76819ee-f39e-4003-934f-43f0ee298a6e",
+      "a96ef15e-3252-4141-904e-38839bb99d1b",
+      "a9cc778c-6ea7-445c-8c10-2baf93520496",
+      "aab922f9-b730-4349-bcf5-bfe20252c91f",
+      "ad84c033-55bf-4f64-9683-738ee5314148",
+      "b0679429-2bc4-43a5-a416-24d3650bbaf2",
+      "b390314c-5c65-4221-8e2b-81538b2c282a",
+      "b3cafe49-1e2e-45ea-8d7c-0c90a54ca4c2",
+      "b4cbae21-786c-447b-9103-541bcf27c6e4",
+      "b5aef8f8-f6ec-46fe-a068-889f26a7ff31",
+      "b8bcd7be-28f1-4b81-bb9a-01770e59736b",
+      "bc2e0c7a-b832-4e07-aad9-f8c7f8c18583",
+      "bc8a1d7b-5f0f-415d-90ea-3b2ca573feec",
+      "bf40fb28-11e1-4481-98da-ca58ecedd2e4",
+      "c08cb487-9b36-418e-8b73-27ebc7c85ad3",
+      "c170749a-5c5a-4fb0-b3c4-2a3a1163dcdc",
+      "c31a9931-c5ac-4685-a03f-64eb5d4c3aac",
+      "c3c5a7d7-2a8a-4e51-92b5-6db2aaf7e7a4",
+      "c4f7a41d-450d-42e9-b006-5ce63f99072a",
+      "c514eb43-7723-4954-96b2-3279f9ba6e76",
+      "c564939c-04f8-4941-a950-8b609e26b34b",
+      "cc5d7e9b-5442-4bbd-8591-3b9ffec89acf",
+      "cecb7450-223e-48e4-8eee-24c9f3412526",
+      "ced12a46-6aea-45e3-8eee-c6be21e5117b",
+      "d093105f-249c-4c6d-b9ef-be3799353e3d",
+      "d2a57f7a-36c9-4c41-90a3-8cf84f346a0a",
+      "d31aa03c-7d3f-4252-83c8-7a74435873a7",
+      "d52d2e7e-72cc-47de-9fac-4de3c8aec715",
+      "d6c9a81f-82bd-494c-bf70-d71485acdae6",
+      "d7b63b47-57a7-4397-b0ce-fe01c7a5d76e",
+      "d9c6ac77-d906-464d-9700-cfc0a0a9db0d",
+      "daa1c4c4-204e-4515-9685-5a4d986b7062",
+      "db18b8fe-e8af-43f2-8dee-0cdc06596e9f",
+      "dbe8f21f-f06c-4629-9c88-a3bb0c397147",
+      "dc241dfd-0d17-4441-9924-059efaaa55b5",
+      "dc8681d1-9e01-45b9-aa0f-da97465d6ce1",
+      "dc921dae-4986-43dd-af5e-0d324ffc1a2f",
+      "dd4b19ad-c269-4848-8d3b-4747472d804b",
+      "dd90e681-f828-45dc-9757-214a9af39ff8",
+      "de033d0f-a9ec-4a5f-b816-2a9ae45af9ef",
+      "dfb3df78-e19c-4ee4-b980-5821ef0afe49",
+      "e26658dd-67a9-4cf6-b750-4a05dc3b7690",
+      "e3da476e-bdcd-400d-b343-b755b4e174b3",
+      "e80c06da-1422-4c2f-9429-cb6bc732ce7e",
+      "e81bd82c-7247-4b94-b4f5-e31633bb51e6",
+      "e85f2850-6b58-4147-9087-ad53d5a36964",
+      "e89aab81-cd6c-4a57-8199-0c976e30493e",
+      "e93ba5da-1124-40b1-845a-fd375dd1de86",
+      "e94cf60b-b2cf-49fa-b19d-51a38f3cae28",
+      "e9b48dd2-f0a0-4202-a7f7-6c6354260f87",
+      "eab96986-6462-4cbc-ae67-6780c47133fc",
+      "eb349d46-698b-4dd9-90a5-4c7b3d415c38",
+      "eb4b7fec-4e69-4a35-91bb-b5ee4a5e8331",
+      "f0b43bf5-0b8c-496e-952d-2521163f8a09",
+      "f2beb35e-8a55-482c-885d-d5f7d9964152",
+      "f2d9b96d-4b8f-4ab1-b8f6-4adf704d28cc",
+      "f319c067-269b-454c-af5a-ad68ae23d14b",
+      "f350dd3d-e660-45d3-88ce-e5289f69cd13",
+      "f390ada7-e400-4f12-8455-0b49572efe85",
+      "f693a2ec-2693-4379-86ef-5efee73bfb66",
+      "f8545f64-d0a9-4a36-8545-7c33b2879b2c",
+      "f871aaed-a1e4-473f-96c8-9265846807a7",
+      "fae2351e-e6d6-43d3-b081-8c7c2457e472",
+      "fe1659b8-a0be-49a8-88a1-77bb0ce9d0e9",
+      "fe43e783-529d-448f-92bb-74ebf386bdae",
+      "fe684660-47bb-4575-94a0-3673f4e24f8c",
+      "ff908805-61c5-4726-baf3-e2806c323fa0",
+      "ff986c19-857f-4f57-be9a-a63323b74fca"
+    ],
+    "Unit #24 \u2192 GEORGETOWN": [
+      "02021dbd-b5d5-4533-b6fa-ece591efb709"
+    ],
+    "Building Q \u2192 MILTON": [
+      "027c0d19-2b2e-4bf6-a280-972282369154"
+    ],
+    "Unit 14 \u2192 GEORGETOWN": [
+      "04c14cb0-c2f2-468e-8dba-6aff2ffe9a05"
+    ],
+    "Unit 1 \u2192 WHITBY": [
+      "06264f91-c83c-43cc-9d6c-e5e715aec1cb"
+    ],
+    "Unit 1 \u2192 BRAMPTON": [
+      "0659b0fd-cddd-43db-9a4c-1c05f09cf83b",
+      "3d62e02f-dad6-42e7-82b4-a94bbdf17084",
+      "a2af38b7-570e-42b3-8b4f-e4b53d64e23a"
+    ],
+    "Suite 105 \u2192 MISSISSAUGA": [
+      "07ec954c-5e5c-4341-bcc9-930e8fde761c"
+    ],
+    "E. York \u2192 EAST YORK": [
+      "086f4aa1-e2b6-4f27-8161-2a370adae0b8",
+      "137b0e3a-fe3e-4167-b36a-ba73b76d13e6",
+      "148fc925-d1d2-441c-9c45-a4e2d1ac164d",
+      "1e98f6b3-7bd1-4371-a86a-f865914a89c5",
+      "277289f4-034c-4ad3-8c1c-ec70edaf4a7d",
+      "2da91c9e-ae36-4a6e-bd1c-68ee3441952c",
+      "31e8b6a6-1ebe-45bc-8879-56393159ac7e",
+      "3cc7166e-f642-4c76-a838-1c76af46240b",
+      "3ecb68d7-9ba5-422b-8120-b3b17ae7921e",
+      "44f6fb74-31a3-401b-9c9e-274840ff1d6a",
+      "5d11639e-f4b2-4cfc-a2dd-18f9b46f6e98",
+      "6615d855-9350-4e75-b3d6-031e5a800584",
+      "6b007019-1cc5-4fae-b786-40e75a3e6519",
+      "70dd518a-18f0-435c-a52f-d4afb23622d5",
+      "75717ef9-acea-4ab4-9972-bb0795d39a85",
+      "869cbbac-6cdc-4a16-ba9b-0ed30ccb850b",
+      "8ac9c267-2b04-49e4-a664-2b4d334e52e1",
+      "a722a802-ffb6-4b6e-8e94-0a51d67e85f2",
+      "aa6fe40e-5d55-4ac7-be2e-788be75bb5b5",
+      "acbc43eb-c53a-4a96-a7be-fe8252e7f815",
+      "bb90534e-8089-43b7-a410-5e2892f2f2ea",
+      "c4ce2d5a-81cc-47f8-99f8-f34f1cedfb0d",
+      "d1d09875-bc73-4ab3-9156-f0b8153ad66d",
+      "e1533861-c7c6-4411-970e-65ffb94b28a0",
+      "e1df695c-1a2f-42cb-a96e-c6d37d4a8a7a",
+      "ea9809d1-b42a-4fd5-bb01-9f8bf6b27df2",
+      "eb139ca6-eb1a-4f57-a5bc-8691191a09a8",
+      "ebd07a76-409a-4cce-bfa3-e87e749c5607",
+      "f08b55a9-ca9e-46f5-ad82-a22f2a1394d1",
+      "f259311b-f90c-4957-acfc-342f98720f5a",
+      "f316efd9-0a06-473d-8128-ea3ab1bdec42",
+      "f62622f1-8fe3-42ef-839e-433e5f0d63de"
+    ],
+    "Unit 104 \u2192 VAUGHAN": [
+      "094df0aa-c84a-464e-9336-926ca5c46d04"
+    ],
+    "Unit 1 \u2192 MISSISSAUGA": [
+      "09632a10-ff51-4c5c-a7f3-d1eed4d8e1c5"
+    ],
+    "Unit 700 \u2192 TORONTO": [
+      "102ea22a-74fa-4e64-99d0-437015df6296"
+    ],
+    "Unit 101 - 104 \u2192 TORONTO": [
+      "1af91dd6-1d51-4be9-879e-71ee9a879725"
+    ],
+    "Unit 4 \u2192 BELLEVILLE": [
+      "1e11fd51-25f7-40d3-bccc-cf648dc4a566"
+    ],
+    "Unit J016 \u2192 BARRIE": [
+      "208feb2b-b74c-4ba5-aa93-cabc519ec7cd"
+    ],
+    "Unit 1 \u2192 TORONTO": [
+      "20b6ab4c-7b5e-4b5e-8144-17b87253a8a6"
+    ],
+    "Suite 108 \u2192 TORONTO": [
+      "20da812d-b1fd-4fda-b34c-b4fbf7c7effa"
+    ],
+    "Building B \u2192 OAKVILLE": [
+      "2173560f-4989-4fa2-9a83-7297fec5cc72"
+    ],
+    "Unit 111A \u2192 VAUGHAN": [
+      "245f87f4-9240-4fae-869a-c5eab86c39d5"
+    ],
+    "Unit 1580 \u2192 TORONTO": [
+      "25dce5b5-7ec5-4d7c-a319-057fb5cc3cf8"
+    ],
+    "Unit 100 \u2192 TORONTO": [
+      "26868c8d-c1df-4fec-bb9d-6a2fd482c57f"
+    ],
+    "Unit 5 \u2192 OAKVILLE": [
+      "26e087f9-3cb8-43a5-839c-4fd63803279a"
+    ],
+    "Unit 1 \u2192 MARKHAM": [
+      "2ab8ccc1-5c72-476b-bf4a-f9f325ed4a56",
+      "e19d42e6-b67e-4115-8043-eb02db244fc5"
+    ],
+    "Unit 1 \u2192 PICKERING": [
+      "2d1fd3fb-ba2b-4ca8-94ef-b56d4123f76b",
+      "ef3e10b1-711e-4b2b-86e2-0159cb5c9531"
+    ],
+    "Unit 38 \u2192 TORONTO": [
+      "2effcb8e-9a1d-4c7c-94ea-9b3917f9383c"
+    ],
+    "North \u2192 OSHAWA": [
+      "3209555e-b48a-43bd-b1d2-c372e2a418c9"
+    ],
+    "Unit E1 \u2192 TORONTO": [
+      "3d18e1bf-5eda-48e7-8db6-043c38998dd0"
+    ],
+    "Unit 19 \u2192 TORONTO": [
+      "485c21b1-600c-415f-bb8f-502ca350ab79"
+    ],
+    "Unit 10 \u2192 MISSISSAUGA": [
+      "4a8eaa2e-bfcb-4c8b-bf62-11684caf5fa9"
+    ],
+    "Unit 2 \u2192 WOODBRIDGE": [
+      "5694e721-a8a9-44e7-819b-4394156de92a"
+    ],
+    "Suite 100 \u2192 MISSISSAUGA": [
+      "66e57409-b653-4e70-9bc1-89cf0fb06606"
+    ],
+    "Building E \u2192 KITCHENER": [
+      "683db173-03bd-4c21-9686-29f655160b75"
+    ],
+    "Unit 24 \u2192 MARKHAM": [
+      "68d1d20b-03b8-4e12-ab49-ab811cdd0e5d"
+    ],
+    "Unit 116 \u2192 TORONTO": [
+      "6ba176fa-66f8-4f2a-9f0f-df300224dfa5"
+    ],
+    "Unit C \u2192 KITCHENER": [
+      "6d5418bd-b307-49ea-a9b9-87c3e33b0031"
+    ],
+    "Unit 10 \u2192 LONDON": [
+      "7173cfe4-25c3-40f0-b834-d89b8b662615"
+    ],
+    "Unit E \u2192 TORONTO": [
+      "7bf06210-560c-4ebb-8f22-6437f813a224"
+    ],
+    "Unit 300 \u2192 MARKHAM": [
+      "7e1f8c5c-efad-42f6-bace-d563562dfac4"
+    ],
+    "Unit 1 \u2192 OAKVILLE": [
+      "7f1a1dd9-59f8-4c53-a0c9-0307060bf379"
+    ],
+    "Unit 22 \u2192 WATERLOO": [
+      "8bfc5a1b-f0c4-47d4-8640-4d2341800a64"
+    ],
+    "Unit 1 \u2192 MILTON": [
+      "98b5c1d6-5409-4766-8c94-5db2449c0857"
+    ],
+    "345 King Street West \u2192 KITCHENER": [
+      "999bb73a-676a-43e4-868c-052235b23406"
+    ],
+    "Unit 1 \u2192 OTTAWA": [
+      "9b97934b-eee1-4780-9b1a-daa370bcc856"
+    ],
+    "Unit 150 \u2192 HAMILTON": [
+      "9c518b7f-ffad-4283-85f8-873464bf420f"
+    ],
+    "Unit 1 \u2192 LONDON": [
+      "9e7c513f-a03a-4947-97b2-2ed0b7c09f19"
+    ],
+    "Unit J \u2192 MISSISSAUGA": [
+      "b1221e33-f8ca-4dce-9451-20d5c7293bfe"
+    ],
+    "Unit #5 \u2192 HAMILTON": [
+      "b92207d0-be8b-4c69-8781-b2bad6ead920"
+    ],
+    "Unit 4 \u2192 TORONTO": [
+      "b95ab6a3-6d07-47b9-90aa-76f29d9a679e"
+    ],
+    "Unit 177 \u2192 LONDON": [
+      "ba407712-1535-4bdd-955a-409ee5d9467c"
+    ],
+    "Unit 100 \u2192 OTTAWA": [
+      "c15fde4c-880d-4fbd-b3ab-672309b8f81a"
+    ],
+    "Bldg C3 \u2192 TORONTO": [
+      "cc490397-cbae-45ab-a049-ae752eb5168d"
+    ],
+    "Unit #607 & 615 \u2192 TORONTO": [
+      "cce99e23-135c-4b32-8230-e1a252f0d81d"
+    ],
+    "Unit 1 \u2192 STOUFFVILLE": [
+      "cd1314a0-1803-4dca-a00f-112624136361"
+    ],
+    "Unit B8 \u2192 MISSISSAUGA": [
+      "d4ca7f0a-1942-4c6b-8a2c-680e868a2a89"
+    ],
+    "Unit 2 \u2192 TORONTO": [
+      "dcffce3b-2c29-481b-8469-0edf2d229335"
+    ],
+    "Unit 3 \u2192 MILTON": [
+      "e5d1e909-5ae4-4062-93ce-2f7ebefc9e2f"
+    ],
+    "Unit 7 \u2192 MISSISSAUGA": [
+      "eb2ab5ac-e37c-4f98-bd8f-1e83fa36fd3a"
+    ],
+    "Suite 180 \u2192 THORNHILL": [
+      "f2fe1215-e0f2-4056-9406-cbb5e661e1de"
+    ],
+    "Unit 22 \u2192 AJAX": [
+      "f46f7e47-61bc-4185-8f8f-06e9740a65ee"
+    ],
+    "Unit 146 \u2192 OTTAWA": [
+      "fc7f4ee5-6f4f-4a73-af55-0a2125675598"
+    ]
+  },
+  "sample_fixes": [
+    {
+      "property_id": "003f7b5e-e042-45d3-8b28-f193d5997e13",
+      "address": "367 - 369 MARLEE AVE",
+      "current_city": "N. York",
+      "fixed_city": "NORTH YORK",
+      "canonical": "367 - 369 MARLEE AVE, N. YORK, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "02021dbd-b5d5-4533-b6fa-ece591efb709",
+      "address": "280 GUELPH ST",
+      "current_city": "Unit #24",
+      "fixed_city": "GEORGETOWN",
+      "canonical": "280 GUELPH ST, UNIT #24, GEORGETOWN, CA",
+      "issue_type": "unit_or_address"
+    },
+    {
+      "property_id": "027c0d19-2b2e-4bf6-a280-972282369154",
+      "address": "1005 Maple Avenue",
+      "current_city": "Building Q",
+      "fixed_city": "MILTON",
+      "canonical": "1005 MAPLE AVENUE, BUILDING Q, MILTON, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "04b2cfa2-01bb-4ec7-ba0a-6e134459b894",
+      "address": "245 - 253 MARLEE AVE",
+      "current_city": "N. York",
+      "fixed_city": "NORTH YORK",
+      "canonical": "245 - 253 MARLEE AVE, N. YORK, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "04c14cb0-c2f2-468e-8dba-6aff2ffe9a05",
+      "address": "280 Guelph Street",
+      "current_city": "Unit 14",
+      "fixed_city": "GEORGETOWN",
+      "canonical": "280 GUELPH STREET, UNIT 14, GEORGETOWN, CA",
+      "issue_type": "unit_or_address"
+    },
+    {
+      "property_id": "04f68cec-328c-413c-8fa5-71ac9984e033",
+      "address": "1718 WILSON AVE",
+      "current_city": "N. York",
+      "fixed_city": "NORTH YORK",
+      "canonical": "1718 WILSON AVE, N. YORK, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "05c4e06f-8a98-42a8-b6e9-00e396fd1881",
+      "address": "1936A AVENUE RD",
+      "current_city": "N. York",
+      "fixed_city": "NORTH YORK",
+      "canonical": "1936A AVENUE RD, N. YORK, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "06264f91-c83c-43cc-9d6c-e5e715aec1cb",
+      "address": "308 Taunton Road East",
+      "current_city": "Unit 1",
+      "fixed_city": "WHITBY",
+      "canonical": "308 TAUNTON ROAD EAST, UNIT 1, WHITBY, CA",
+      "issue_type": "unit_or_address"
+    },
+    {
+      "property_id": "0659b0fd-cddd-43db-9a4c-1c05f09cf83b",
+      "address": "380 Bovaird Drive",
+      "current_city": "Unit 1",
+      "fixed_city": "BRAMPTON",
+      "canonical": "380 BOVAIRD DRIVE, UNIT 1, BRAMPTON, CA",
+      "issue_type": "unit_or_address"
+    },
+    {
+      "property_id": "07ec954c-5e5c-4341-bcc9-930e8fde761c",
+      "address": "1 City Centre Drive",
+      "current_city": "Suite 105",
+      "fixed_city": "MISSISSAUGA",
+      "canonical": "1 CITY CENTRE DRIVE, SUITE 105, MISSISSAUGA, CA",
+      "issue_type": "unit_or_address"
+    },
+    {
+      "property_id": "086f4aa1-e2b6-4f27-8161-2a370adae0b8",
+      "address": "852 PAPE AVE",
+      "current_city": "E. York",
+      "fixed_city": "EAST YORK",
+      "canonical": "852 PAPE AVE, E. YORK, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "094df0aa-c84a-464e-9336-926ca5c46d04",
+      "address": "100 NEW PARK PLACE",
+      "current_city": "Unit 104",
+      "fixed_city": "VAUGHAN",
+      "canonical": "100 NEW PARK PLACE, UNIT 104, VAUGHAN, CA",
+      "issue_type": "unit_or_address"
+    },
+    {
+      "property_id": "09632a10-ff51-4c5c-a7f3-d1eed4d8e1c5",
+      "address": "6085 CREDITVIEW RD",
+      "current_city": "Unit 1",
+      "fixed_city": "MISSISSAUGA",
+      "canonical": "6085 CREDITVIEW RD, UNIT 1, MISSISSAUGA, CA",
+      "issue_type": "unit_or_address"
+    },
+    {
+      "property_id": "0f924478-6cfe-49ab-9363-74be8a41b708",
+      "address": "4750 YONGE ST",
+      "current_city": "N. York",
+      "fixed_city": "NORTH YORK",
+      "canonical": "4750 YONGE ST, N. YORK, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "0fc7521c-2160-4e84-b0a5-7b9db0fe4c86",
+      "address": "1683 JANE ST",
+      "current_city": "N. York",
+      "fixed_city": "NORTH YORK",
+      "canonical": "1683 JANE ST, N. YORK, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "102ea22a-74fa-4e64-99d0-437015df6296",
+      "address": "147 LAIRD DRIVE",
+      "current_city": "Unit 700",
+      "fixed_city": "TORONTO",
+      "canonical": "147 LAIRD DRIVE, UNIT 700, TORONTO, CA",
+      "issue_type": "unit_or_address"
+    },
+    {
+      "property_id": "10444dcb-f79d-4828-8921-64fe9fef3645",
+      "address": "3027 BATHURST ST",
+      "current_city": "N. York",
+      "fixed_city": "NORTH YORK",
+      "canonical": "3027 BATHURST ST, N. YORK, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "137b0e3a-fe3e-4167-b36a-ba73b76d13e6",
+      "address": "857 PAPE AVE",
+      "current_city": "E. York",
+      "fixed_city": "EAST YORK",
+      "canonical": "857 PAPE AVE, E. YORK, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "13e800b4-de27-41a0-b430-1e1fa88f9e86",
+      "address": "5376 YONGE ST",
+      "current_city": "N. York",
+      "fixed_city": "NORTH YORK",
+      "canonical": "5376 YONGE ST, N. YORK, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "148fc925-d1d2-441c-9c45-a4e2d1ac164d",
+      "address": "1004 - 1004\u00bd PAPE AVE",
+      "current_city": "E. York",
+      "fixed_city": "EAST YORK",
+      "canonical": "1004 - 1004\u00bd PAPE AVE, E. YORK, CA",
+      "issue_type": "invalid_city"
+    }
+  ],
+  "unfixable_samples": [
+    {
+      "property_id": "001af3c4-7965-465d-8c1b-890b9bfdb39d",
+      "address": "217 Highland Street",
+      "current_city": "Haliburton",
+      "canonical": "217 HIGHLAND STREET, HALIBURTON, ON, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "003c3543-d536-40eb-8361-f90026525fcd",
+      "address": "18 Main St S",
+      "current_city": "Hagersville",
+      "canonical": "18 MAIN ST S, HAGERSVILLE, ON, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "0046a0a2-f40a-407c-99ae-bdbc21a09239",
+      "address": "438 DONALD B MUNRO DR",
+      "current_city": "Carp",
+      "canonical": "438 DONALD B MUNRO DR, CARP, ON, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "005427a9-1992-4ac5-b45e-a6a1f7b8745c",
+      "address": "160 Main St",
+      "current_city": "Iroquois Falls",
+      "canonical": "160 MAIN ST, IROQUOIS FALLS, ON, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "0076a30f-5a5f-4e19-80bc-0e7fcc1241d6",
+      "address": "5200 Old Hwy 69",
+      "current_city": "Hanmer",
+      "canonical": "5200 OLD HWY 69, HANMER, ON, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "0080476f-147e-4b99-ae34-eb36a0b59182",
+      "address": "55 Josephine St",
+      "current_city": "Wingham",
+      "canonical": "55 JOSEPHINE ST, WINGHAM, ON, CANADA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "00821d2c-bdef-4fca-87ec-8053a9e000ef",
+      "address": "19 STOVER ST N.",
+      "current_city": "Norwich",
+      "canonical": "19 STOVER ST N., NORWICH, ON, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "008cbad0-16d5-4318-829b-de99b26d8d52",
+      "address": "53 Plaza Dr",
+      "current_city": "Iroquois",
+      "canonical": "53 PLAZA DR, IROQUOIS, ON, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "00fc2902-8250-420f-be99-6385c81e5ff8",
+      "address": "350 Winewood Ave E",
+      "current_city": "Gravenhurst",
+      "canonical": "350 WINEWOOD AVE E, GRAVENHURST, ON, CANADA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "01052ca2-5928-4ea0-9ee9-0a6c96dd9c43",
+      "address": "147 Main St",
+      "current_city": "Odessa",
+      "canonical": "147 MAIN ST, ODESSA, ON, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "0110ed28-a817-4d87-9eee-849b18a58aff",
+      "address": "Quinte West 178 Front St",
+      "current_city": "Quinte West (Trenton)",
+      "canonical": "QUINTE WEST 178 FRONT ST, QUINTE WEST (TRENTON), ON, CANADA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "0122443c-6174-4e1e-b1c2-c33fc70228e2",
+      "address": "3 Peninsula Road",
+      "current_city": "Marathon",
+      "canonical": "3 PENINSULA ROAD, MARATHON, ON, CANADA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "014350f7-9904-4060-aa50-bce40ae947eb",
+      "address": "1 Richmond Boulevard",
+      "current_city": "Napanee",
+      "canonical": "1 RICHMOND BOULEVARD, NAPANEE, ON, CANADA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "0184e0d6-c84f-4487-91ff-24e716c075c1",
+      "address": "62 Thames Rd E",
+      "current_city": "Exeter",
+      "canonical": "62 THAMES RD E, EXETER, ON, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "01864652-d512-417c-bd46-022c3b8eab0b",
+      "address": "824 Ojibway Road",
+      "current_city": "Shelburne",
+      "canonical": "824 OJIBWAY ROAD, SHELBURNE, ON, CANADA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "01ce1568-b6ad-4efe-b548-1381bd787618",
+      "address": "2 Warwick Dr",
+      "current_city": "Wallaceburg",
+      "canonical": "2 WARWICK DR, WALLACEBURG, ON, CA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "01d4bc25-4564-407d-8a6f-b0d152c7c340",
+      "address": "Gare d'Alexandria 434 Main St S",
+      "current_city": "Gare d'Alexandria",
+      "canonical": "GARE D'ALEXANDRIA 434 MAIN ST S, GARE D'ALEXANDRIA, ON, CANADA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "01d86959-bb92-4ad5-b3ba-b2fab7a47e93",
+      "address": "3151 Strandherd Drive",
+      "current_city": "Ottawa (Nepean)",
+      "canonical": "3151 STRANDHERD DRIVE, OTTAWA (NEPEAN), ON, CANADA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "01e16004-7ae0-4ce1-9685-511c9073dbdb",
+      "address": "2174 Wikwemikong Way",
+      "current_city": "Wikwemikong",
+      "canonical": "2174 WIKWEMIKONG WAY, WIKWEMIKONG, ON, CANADA",
+      "issue_type": "invalid_city"
+    },
+    {
+      "property_id": "01e3d1bf-e707-4529-916b-9e8beba7f776",
+      "address": "Port Elgin 5114 Ontario 21",
+      "current_city": "Port Elgin",
+      "canonical": "PORT ELGIN 5114 ONTARIO 21, PORT ELGIN, ON, CANADA",
+      "issue_type": "invalid_city"
+    }
+  ]
+}
