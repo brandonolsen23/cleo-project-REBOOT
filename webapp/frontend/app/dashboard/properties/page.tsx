@@ -257,26 +257,50 @@ export default function PropertiesPage() {
   const [cities, setCities] = useState<string[]>([])
   const fetchCities = async () => {
     console.log('Fetching cities...')
-    // Fetch all cities by using a large limit
-    const { data, error } = await supabase
-      .from('properties')
-      .select('city')
-      .eq('province', 'ON')
-      .not('city', 'is', null)
-      .order('city')
-      .limit(10000) // Get all cities
 
-    if (error) {
-      console.error('Error fetching cities:', error)
-      console.error('Error details:', error.message, error.details, error.hint)
-      return
-    }
+    try {
+      // Fetch multiple batches to ensure we get all unique cities
+      const batchSize = 1000
+      const batches = 15 // Fetch up to 15k properties
+      let allData: any[] = []
 
-    if (data) {
-      const uniqueCities = Array.from(new Set(data.map(p => p.city).filter(Boolean))) as string[]
-      console.log(`Loaded ${uniqueCities.length} unique cities:`, uniqueCities.slice(0, 10), '...')
+      for (let i = 0; i < batches; i++) {
+        const from = i * batchSize
+        const to = from + batchSize - 1
+
+        const { data, error } = await supabase
+          .from('properties')
+          .select('city')
+          .eq('province', 'ON')
+          .not('city', 'is', null)
+          .range(from, to)
+
+        if (error) {
+          console.error(`Error fetching batch ${i}:`, error)
+          break
+        }
+
+        if (!data || data.length === 0) {
+          console.log(`Batch ${i} returned no data, stopping`)
+          break
+        }
+
+        allData = allData.concat(data)
+        console.log(`Fetched batch ${i}: ${data.length} rows, total so far: ${allData.length}`)
+
+        // If we got less than batchSize, we've reached the end
+        if (data.length < batchSize) {
+          break
+        }
+      }
+
+      const uniqueCities = Array.from(new Set(allData.map(p => p.city).filter(Boolean))) as string[]
+      uniqueCities.sort()
+      console.log(`Loaded ${uniqueCities.length} unique cities from ${allData.length} properties`)
+      console.log('All cities:', uniqueCities)
       setCities(uniqueCities)
-      console.log('Cities state updated, length:', uniqueCities.length)
+    } catch (err) {
+      console.error('Error in fetchCities:', err)
     }
   }
 
@@ -544,29 +568,27 @@ export default function PropertiesPage() {
         {/* Debug info */}
         <div style={{ marginBottom: 8, fontSize: 12, color: '#666' }}>
           Loaded: {cities.length} cities, {brands.length} brands, {buyers.length} buyers, {sellers.length} sellers
+          <br />
+          Cities: {cities.slice(0, 10).join(', ')} ... {cities.slice(-5).join(', ')}
         </div>
         <Space wrap size="middle">
           {/* City Filter */}
-          <select
-            value={cityFilter || ''}
-            onChange={(e) => setCityFilter(e.target.value || undefined)}
-            style={{
-              minWidth: 150,
-              height: 40,
-              padding: '4px 11px',
-              fontSize: 16,
-              border: '1px solid #d9d9d9',
-              borderRadius: 6,
-              cursor: 'pointer'
-            }}
-          >
-            <option value="">City</option>
-            {cities.map(city => (
-              <option key={city} value={city}>
-                {city}
-              </option>
-            ))}
-          </select>
+          <Select
+            placeholder="City"
+            style={{ minWidth: 150 }}
+            size="large"
+            allowClear
+            value={cityFilter}
+            onChange={setCityFilter}
+            showSearch
+            virtual={false}
+            listHeight={500}
+            dropdownStyle={{ maxHeight: 500, overflow: 'auto' }}
+            options={cities.map(city => ({ label: city, value: city }))}
+            filterOption={(input, option) =>
+              (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
+            }
+          />
 
           {/* Brand Filter */}
           <Select

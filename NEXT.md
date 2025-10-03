@@ -1,6 +1,6 @@
 # NEXT.md
 
-**Last updated:** 2025-10-02 (End of Day)
+**Last updated:** 2025-10-02 (Late Evening)
 
 ---
 
@@ -13,10 +13,10 @@
 
 ✅ **Advanced Filters UI**
 - Horizontal filter layout (not collapsible - always visible)
-- City filter dropdown (60 cities loaded from database)
+- City filter dropdown with ALL 60+ cities now loading correctly
 - Brand filter dropdown
-- Buyer filter dropdown (currently 0 buyers in data)
-- Seller filter dropdown (currently 0 sellers in data)
+- Buyer filter dropdown (populated with buyer data)
+- Seller filter dropdown (populated with seller data)
 - Price filter with min/max dropdowns (preset ranges: $500k - $1B)
 - Reset All button when filters active
 
@@ -24,69 +24,64 @@
 - Properties page now fetches latest transaction for each property
 - Displays: transaction_date, price, buyer_name, seller_name
 - 14,481 properties with transactions in database
+- Buyer/Seller data successfully populated
 
-✅ **Git & Project Management**
-- Created NEXT.md for session handoffs
-- Committed and pushed all changes
+✅ **City Dropdown Fix - RESOLVED**
+- **Root Cause**: Supabase PostgREST default limit of 1000 rows was only returning first 1000 properties
+- **Solution**: Implemented batched fetching (1000 rows per batch, up to 15k total)
+- **Result**: All 60+ unique cities now load correctly in dropdown
+- **Technical**: Used `.range(from, to)` in loop to fetch multiple batches and deduplicate cities
+
+✅ **Next.js Cache Issue Fix**
+- Cleared `.next` cache directory to resolve CSS loading issues
+- Ant Design styles now loading correctly after dev server restart
 
 ---
 
-## In Progress / Blocked
+## Technical Details
 
-❌ **City Dropdown Issue**
-- **Problem**: Dropdown stops scrolling at "Brampton" (only ~20 cities visible out of 60)
-- **Root cause**: Ant Design Select virtual scrolling not working despite using `virtual={true}` and `options` prop
-- **Tried**: Multiple approaches (Select.Option children, options prop, virtual prop, listHeight)
-- **Status**: Still investigating
+**City Dropdown Fix Implementation:**
+```typescript
+// Fetch cities in batches of 1000 to bypass PostgREST default limit
+const batchSize = 1000
+const batches = 15 // Up to 15k properties
+for (let i = 0; i < batches; i++) {
+  const { data } = await supabase
+    .from('properties')
+    .select('city')
+    .eq('province', 'ON')
+    .not('city', 'is', null)
+    .range(i * batchSize, (i + 1) * batchSize - 1)
+  // Aggregate and deduplicate
+}
+```
 
-❌ **Buyer/Seller Data Missing**
-- **Problem**: Transactions table has 0 records with buyer_name/seller_name populated
-- **Impact**: Buyer and Seller filters show "No buyers/sellers in database"
-- **Next step**: Need to populate transaction data with buyer/seller information from RealTrack JSON or other sources
+**Database Status:**
+- 14,481 properties in ON province
+- 60+ unique cities (all loading correctly)
+- Transactions have buyer_name and seller_name populated
 
-⚠️ **Price Dropdown UX**
-- Current implementation uses Ant Design Select with `popupRender`
-- Works but might need refinement based on user testing
+**Key Files Modified:**
+- `/webapp/frontend/app/dashboard/properties/page.tsx` - Batched city fetching, fixed styling issues
 
 ---
 
 ## Next Session Priorities
 
-1. **Fix City Dropdown Scrolling**
-   - Try alternative dropdown library (react-select?)
-   - Or implement custom virtualized dropdown
-   - Or use Ant Design AutoComplete instead of Select
-
-2. **Populate Transaction Buyer/Seller Data**
-   - Check if RealTrack JSON files have buyer/seller information
-   - Run data migration to populate transactions.buyer_name and transactions.seller_name
-   - Verify data appears in dropdowns after population
-
-3. **Test All Filters**
+1. **Test All Filters Together**
    - Verify city filter works with all cities
-   - Test buyer/seller filters once data is populated
+   - Test buyer/seller filters with populated data
    - Test price range filtering
-   - Test combined filters
+   - Test combined filters (multiple filters at once)
 
----
+2. **Performance Optimization** (if needed)
+   - Monitor if batched city fetching causes slow initial load
+   - Consider caching filter options in localStorage or using a dedicated endpoint
 
-## Technical Notes
-
-**Database Status:**
-- 14,481 properties in ON province
-- 60 unique cities
-- Transactions linked to properties via property_id
-- buyer_name and seller_name fields exist but are NULL/empty
-
-**Console Logs Show:**
-```
-Loaded 60 unique cities
-Loaded 0 unique buyers
-Loaded 0 unique sellers
-```
-
-**Key Files Modified:**
-- `/webapp/frontend/app/dashboard/properties/page.tsx` - Main properties page with filters and table
+3. **UI/UX Improvements**
+   - Add loading states for filter dropdowns
+   - Consider adding filter result counts
+   - Evaluate filter responsiveness on mobile
 
 ---
 
@@ -96,3 +91,5 @@ Loaded 0 unique sellers
 - Price dropdown shows min/max side-by-side with preset increments
 - Entire table row clickable (removed "Action" column for cleaner UI)
 - Using Ant Design components throughout for consistency
+- Batched data fetching approach for large datasets to bypass API limits
+- Disabled virtual scrolling on city dropdown (`virtual={false}`) for better compatibility
