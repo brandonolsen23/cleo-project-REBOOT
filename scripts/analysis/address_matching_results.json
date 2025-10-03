@@ -1,0 +1,29 @@
+{
+  "properties": {
+    "total": 16110,
+    "on_province": 14481,
+    "with_transactions": 6015,
+    "with_brands_links": 12206,
+    "with_brands_unique": 978
+  },
+  "brand_locations": {
+    "total": 11913,
+    "matched": 11913,
+    "unmatched": 0,
+    "match_rate": 100.0
+  },
+  "address_quality": {
+    "properties": {
+      "with_canonical": 16110,
+      "with_hash": 16110,
+      "with_geocoding": 11102,
+      "total": 16110
+    },
+    "brand_locations": {
+      "with_canonical": 11913,
+      "with_hash": 11913,
+      "total": 11913
+    }
+  },
+  "potential_matches_count": 0
+}
