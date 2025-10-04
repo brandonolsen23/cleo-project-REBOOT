@@ -389,6 +389,15 @@ class NARValidator:
         Returns:
             Validation result with confidence score
         """
+        # Handle None or empty address
+        if not address:
+            return NARValidationResult(
+                nar_found=False,
+                confidence_score=0,
+                match_type="invalid_address",
+                source="nar_query"
+            )
+
         con = self._get_duckdb_connection()
 
         # Parse address into number and street

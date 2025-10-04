@@ -186,7 +186,7 @@ class NARValidationService:
                 SET status = 'processing',
                     attempts = attempts + 1,
                     last_attempt_at = NOW()
-                WHERE id = ANY(%s)
+                WHERE id = ANY(%s::uuid[])
             """, (queue_ids,))
 
             conn.commit()

@@ -1,10 +1,47 @@
 # NEXT.md
 
-**Last updated:** 2025-10-03 (NAR Validation System Complete)
+**Last updated:** 2025-10-03 (Phase 1: libpostal Installation Complete)
 
 ---
 
 ## What We Completed Today (2025-10-03)
+
+### ✅ **Phase 1: libpostal Installation & Testing - COMPLETE** 🎉
+
+**Achievements:**
+- ✅ Installed libpostal C library from source (v1.1.3)
+- ✅ Properly installed to `/usr/local/` (system location)
+- ✅ Installed Python wrapper via pip
+- ✅ Tested on 10 sample addresses (5 transactions, 5 brand_locations)
+- ✅ 100% success rate on house_number, road, city extraction
+- ✅ Configured sudo NOPASSWD for make/brew commands
+
+**Test Results:**
+- House Number: 10/10 (100%)
+- Road/Street: 10/10 (100%)
+- City: 10/10 (100%)
+- Postal Code: 5/10 (50% - expected)
+
+**Key Findings:**
+- libpostal works excellently for Canadian addresses
+- 2 hyphenated addresses detected (will handle in Phase 8)
+- No environment variables needed - properly linked
+
+**Files Created:**
+- `CLAUDE.md` - Project context for AI assistant
+- `scripts/analysis/fetch_sample_addresses.py` - Sample address fetcher
+- `scripts/analysis/test_libpostal_parsing.py` - Test suite with metrics
+
+**System Configuration:**
+- Configured `/etc/sudoers` for passwordless make/brew
+- libpostal installed to `/usr/local/lib/libpostal.1.dylib`
+- Python wrapper properly linked to system library
+
+**Ready for Phase 2:** Parse Transactions Table
+
+---
+
+## What We Completed Previously (2025-10-03)
 
 ### ✅ **NAR Validation System - COMPLETE** 🎉
 
@@ -345,55 +382,277 @@ UPDATE transactions SET city_raw = city_raw_backup;
 
 ---
 
-## Next Session Priorities (Updated 2025-10-03)
+## Next Session Priorities (Updated 2025-10-03 - REBOOT)
 
-### Priority 1: Deploy NAR Validation System ✅ READY
+### 🚨 IMPORTANT: Address Normalization - STARTING FROM SCRATCH
 
-**The NAR validation system is complete and ready for production deployment!**
+**After comprehensive analysis, we discovered the previous NAR validation approach was fundamentally flawed.**
 
-#### Immediate Actions:
+**Key Issues Found:**
+- Raw data from scrapers has inconsistent formats that need parsing FIRST
+- Realtrack: "St. Catharines 212 Welland Avenue #Unit 5" (city prefix, unit number)
+- Brand Locations: Already structured but has postal codes
+- Previous approach tried to validate unparsed messy data → failed
 
-1. **Start Backfill (4-8 hours)**
-   ```bash
-   python3 scripts/backfill/backfill_nar_validation.py
-   ```
-   - Queues all 16k existing properties
-   - Processes in background automatically
-   - Can start with `--limit 1000` for testing
+**New Approach:**
+We're rebuilding the normalization pipeline from the ground up using a systematic 3-stage process:
+1. **Raw Ingestion** - Ensure scrapers capture minimum data
+2. **Parsing** - Use libpostal to parse addresses into clean components
+3. **Standardization** - Multi-step verification cascade (postal → exact → amalgamation → fuzzy)
 
-2. **Start Background Service**
-   ```bash
-   screen -S nar-validator
-   python3 scripts/services/nar_validation_service.py
-   # Ctrl+A, then D to detach
-   ```
-   - Runs continuously in background
-   - Processes 100 properties every 30 seconds
-   - Email alerts on failures
+See `COMPREHENSIVE_ADDRESS_STANDARDIZATION_PLAN.md` for full details.
 
-3. **Monitor Progress**
-   ```bash
-   # One-time check
-   python3 scripts/monitoring/nar_validation_status.py
+---
 
-   # Watch mode (refresh every 5s)
-   watch -n 5 python3 scripts/monitoring/nar_validation_status.py
-   ```
+### Priority 1: Address Normalization - 10 Phase Implementation 🏗️
 
-4. **Integrate with RealTrack Scraper**
-   - Add to end of `realtrack_ingest.py`:
-   ```python
-   import subprocess
-   subprocess.run(['python3', 'scripts/scraper/post_realtrack_queue_validation.py'])
-   ```
+**Building one piece at a time, verify each before proceeding.**
 
-#### Expected Results After Backfill:
+#### ✅ Phase 1: Install & Test libpostal - COMPLETE
+**Goal:** Get libpostal working and test basic parsing
 
-- ✅ 100% addresses validated against NAR 2024
-- ✅ High-confidence city updates (confidence ≥90)
-- ✅ Postal codes filled from NAR
-- ✅ Geocoding improved (68.9% → ~95%)
-- ✅ $0 cost (local database)
+**Tasks:**
+- ✅ Install libpostal C library (compiled from source, installed to `/usr/local/`)
+- ✅ Install Python wrapper (`pip install postal`)
+- ✅ Test on 10 sample addresses from our data
+- ✅ Verify parsing quality
+
+**Success Criteria: ALL MET ✅**
+- ✅ 100% house_number extraction (10/10)
+- ✅ 100% road extraction (10/10)
+- ✅ 100% city extraction (10/10)
+- ✅ 50% postcode extraction (5/10 - only brand_locations have them)
+
+**Deliverables:**
+- `scripts/analysis/fetch_sample_addresses.py` - Fetches sample addresses
+- `scripts/analysis/test_libpostal_parsing.py` - Test suite with metrics
+- `/tmp/sample_addresses.json` - Sample data
+
+**Key Findings:**
+- libpostal works excellently for Canadian addresses
+- 2 hyphenated addresses detected (will handle in Phase 8)
+- libpostal automatically normalizes output (lowercase)
+
+**Installation:**
+- libpostal: `/usr/local/lib/libpostal.1.dylib`
+- Headers: `/usr/local/include/libpostal/`
+- Data: `/usr/local/share/libpostal/`
+- Python wrapper: Installed via pip, properly linked to system library
+- **No environment variables needed** ✅
+
+**🛑 CHECKPOINT PASSED:** Ready to proceed to Phase 2
+
+---
+
+#### ⏳ Phase 2: Parse Transactions Table (Realtrack)
+**Goal:** Create `transactions_parsed` table and parse all Realtrack addresses
+
+**Tasks:**
+- [ ] Create `transactions_parsed` table (schema in IMPLEMENTATION_PHASES.md)
+- [ ] Write parsing script for transactions
+- [ ] Parse 100 sample transactions
+- [ ] Review parsing quality
+- [ ] Parse remaining transactions (if quality good)
+
+**Success Criteria:**
+- 95%+ addresses have house_number extracted
+- 95%+ addresses have road extracted
+- 90%+ addresses have city_parsed extracted
+
+**Deliverable:** `transactions_parsed` table populated with report
+
+**🛑 CHECKPOINT:** Review sample of 50 parsed addresses
+
+---
+
+#### ⏳ Phase 3: Parse Brand Locations Table
+**Goal:** Create `brand_locations_parsed` table and parse all brand location addresses
+
+**Tasks:**
+- [ ] Create `brand_locations_parsed` table
+- [ ] Write parsing script for brand_locations
+- [ ] Parse 100 sample brand locations
+- [ ] Review parsing quality
+- [ ] Parse remaining brand locations (if quality good)
+
+**Success Criteria:**
+- 95%+ addresses have house_number extracted
+- 95%+ addresses have road extracted
+- 90%+ addresses have city_parsed extracted
+- 80%+ addresses have postcode_parsed extracted
+
+**Deliverable:** `brand_locations_parsed` table populated with report
+
+**🛑 CHECKPOINT:** Review sample of 50 parsed addresses
+
+---
+
+#### ⏳ Phase 4: City Verification - Postal Code Lookup
+**Goal:** Verify cities using postal code → NAR lookup (95% confidence)
+
+**Tasks:**
+- [ ] Create `address_standardization` tracking table
+- [ ] Write postal code → city lookup function
+- [ ] Test on 100 addresses WITH postal codes
+- [ ] Review accuracy
+
+**Success Criteria:**
+- 90%+ valid postal codes found in NAR
+- Cities returned make sense
+
+**Deliverable:** Function + test report
+
+**🛑 CHECKPOINT:** Review postal code verification results
+
+---
+
+#### ⏳ Phase 5: City Verification - Exact Match
+**Goal:** For addresses WITHOUT postal codes, check if city exists in NAR (90% confidence)
+
+**Tasks:**
+- [ ] Extract all distinct cities from NAR (one-time)
+- [ ] Write exact city match function
+- [ ] Test on 100 addresses WITHOUT postal codes
+- [ ] Review accuracy
+
+**Success Criteria:**
+- Can identify when city is valid
+- Can identify when city is NOT in NAR
+
+**Deliverable:** Function + test report
+
+**🛑 CHECKPOINT:** Review exact match results
+
+---
+
+#### ⏳ Phase 6: City Verification - Amalgamation Check
+**Goal:** Map old municipality names to current amalgamated cities (85% confidence)
+
+**Tasks:**
+- [ ] Research and create complete Ontario amalgamation map
+- [ ] Write amalgamation check function
+- [ ] Test on addresses with old city names
+- [ ] Review accuracy
+
+**Examples:**
+- "Scarborough" → "TORONTO"
+- "Nepean" → "OTTAWA"
+- "Stoney Creek" → "HAMILTON"
+
+**Success Criteria:**
+- Correctly maps former municipalities
+- Returns current city names
+
+**Deliverable:** Complete amalgamation mapping + function
+
+**🛑 CHECKPOINT:** Review amalgamation mapping
+
+---
+
+#### ⏳ Phase 7: City Verification - Fuzzy Match
+**Goal:** Handle typos and minor variations in city names (85%+ confidence)
+
+**Tasks:**
+- [ ] Install rapidfuzz library
+- [ ] Write fuzzy match function (85% threshold)
+- [ ] Test on addresses with misspelled cities
+- [ ] Review accuracy (ensure no false positives!)
+
+**Success Criteria:**
+- Correctly matches typos (e.g., "Tornto" → "TORONTO")
+- Does NOT create false matches
+- Score threshold (85) is appropriate
+
+**Deliverable:** Function + test report
+
+**🛑 CHECKPOINT:** Review fuzzy match results (CRITICAL: check for false positives!)
+
+---
+
+#### ⏳ Phase 8: Hyphenated Address Expansion
+**Goal:** Expand address ranges into individual candidate addresses
+
+**Tasks:**
+- [ ] Write function to detect hyphenated ranges
+- [ ] Write function to expand range into list
+- [ ] Test on sample hyphenated addresses
+- [ ] Review expansion logic
+
+**Examples:**
+- "251-255" → ["251", "252", "253", "254", "255"]
+- "8 - 14" → ["8", "9", "10", "11", "12", "13", "14"]
+
+**Success Criteria:**
+- Correctly expands ranges
+- Handles spaces and different formats
+- Returns original if not a range
+
+**Deliverable:** Function + test examples
+
+**Note:** Keep original hyphenated format for display on Property Details page
+
+**🛑 CHECKPOINT:** Review expansion logic
+
+---
+
+#### ⏳ Phase 9: NAR Address Validation
+**Goal:** Validate full address against NAR using verified city (100% confidence if found)
+
+**Tasks:**
+- [ ] Write NAR query function
+- [ ] Test on 100 addresses with verified cities
+- [ ] Handle hyphenated addresses (try all candidates)
+- [ ] Review match rate
+
+**Success Criteria:**
+- Successfully queries NAR
+- Tries all candidates for hyphenated addresses
+- Returns match with coordinates
+
+**Deliverable:** Function + test report
+
+**🛑 CHECKPOINT:** Review NAR validation results
+
+---
+
+#### ⏳ Phase 10: Full Integration & Testing
+**Goal:** Run complete standardization pipeline on 1000 sample addresses
+
+**Tasks:**
+- [ ] Combine all verification steps into single workflow
+- [ ] Run on 1000 addresses (500 from transactions, 500 from brand_locations)
+- [ ] Generate comprehensive report
+- [ ] Review results
+
+**Expected Report Metrics:**
+- Addresses parsed: 100%
+- City verification: ≥90%
+- NAR match rate: ≥60% (for addresses with verified cities)
+- Confidence ≥90: ≥75%
+
+**Deliverable:** Complete standardization script + comprehensive report
+
+**🛑 CHECKPOINT:** Full review of results before proceeding to production
+
+---
+
+### Key Decisions Made:
+
+✅ **Hyphenated Addresses:** Try all numbers in range (exhaustive)
+✅ **Google API:** Skip for now (only if we don't hit 100% accuracy)
+✅ **Confidence Thresholds:** 85 for city updates, 90 for address updates
+✅ **Table Schema:** Separate tables (`transactions_parsed`, `brand_locations_parsed`)
+✅ **Testing:** Start with 1000 sample before full migration
+✅ **Display:** Keep original hyphenated format for Property Details page
+
+---
+
+### Files Created for New Plan:
+
+- `COMPREHENSIVE_ADDRESS_STANDARDIZATION_PLAN.md` - Complete 3-stage plan
+- `IMPLEMENTATION_PHASES.md` - Detailed 10-phase breakdown with code examples
+- `RAW_DATA_ANALYSIS.md` - Complete data pipeline documentation
+- `ADDRESS_PARSING_PLAN.md` - Original parsing rules (superseded by libpostal approach)
 
 ---
 

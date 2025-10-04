@@ -93,10 +93,11 @@ def queue_properties_batch(
 
     try:
         # Check which properties are not already queued
+        # Cast to UUID array for proper type matching
         cursor.execute("""
             SELECT property_id
             FROM nar_validation_queue
-            WHERE property_id = ANY(%s)
+            WHERE property_id = ANY(%s::uuid[])
               AND status IN ('pending', 'processing')
         """, (property_ids,))
 
