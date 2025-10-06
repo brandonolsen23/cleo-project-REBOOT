@@ -65,6 +65,34 @@ brand_locations
 nar_validation_queue, nar_validation_results, nar_validation_history
 └── See NAR Validation System section
 
+transaction_address_expansion_parse
+├── id (uuid, primary key)
+├── transaction_id (uuid) → transactions
+├── original_address_raw (text) - original multi-property address
+├── expanded_full_address (text) - individual parsed address
+├── is_multi_property (boolean)
+├── pattern_type (text) - 'ampersand', 'range_dash', 'comma_separated'
+└── address_position (int) - position in multi-property list
+
+google_geocoded_addresses
+├── id (uuid, primary key)
+├── source_table (text) - 'transaction_address_expansion_parse'
+├── source_id (uuid) - references source table
+├── input_address (text) - address sent to Google
+├── google_formatted_address (text)
+├── google_latitude, google_longitude (decimal)
+├── google_postal_code (text)
+├── google_city (text)
+├── geocode_success (boolean)
+├── quality_reviewed (boolean)
+└── needs_manual_review (boolean)
+
+transaction_address_links
+├── transaction_id (uuid) → transactions
+├── expanded_address_id (uuid) → transaction_address_expansion_parse
+├── is_primary (boolean)
+└── is_multi_property (boolean)
+
 brand_location_property_links
 ├── brand_location_id (uuid) → brand_locations
 ├── property_id (uuid) → properties
@@ -112,6 +140,14 @@ cleo-project-REBOOT/
 │   ├── scraper/
 │   │   ├── realtrack_ingest.py           # Main transaction scraper
 │   │   └── post_realtrack_queue_validation.py  # Queues for NAR validation
+│   ├── parsing/
+│   │   └── parse_transaction_addresses.py  # Multi-property address parser
+│   ├── geocoding/
+│   │   └── geocode_expanded_addresses.py   # Google Geocoding API integration
+│   ├── quality/
+│   │   └── review_geocoded_addresses.py    # Post-geocoding quality review
+│   ├── validation/
+│   │   └── data_quality_validation.py      # 7 comprehensive data quality tests
 │   ├── services/
 │   │   └── nar_validation_service.py     # Background NAR validation service
 │   ├── setup/
@@ -121,11 +157,14 @@ cleo-project-REBOOT/
 │   ├── monitoring/
 │   │   └── nar_validation_status.py      # Monitor validation progress
 │   └── analysis/
+│       ├── export_city_mismatches.py     # Export city discrepancies
 │       └── [various analysis scripts]
 │
 ├── common/
 │   ├── nar_validator.py        # NAR validation with caching
 │   ├── queue_nar_validation.py # Queue helper
+│   ├── multi_property_parser.py  # Multi-property address parsing
+│   ├── google_geocoder.py      # Google Geocoding API wrapper
 │   └── [future: address_parser.py, ontario_cities.py]
 │
 ├── docs/
@@ -141,24 +180,30 @@ cleo-project-REBOOT/
 
 ## Current Work (Active)
 
+### ✅ Transaction Geocoding Pipeline - COMPLETE (2025-10-06)
+**3-stage workflow for geocoding transaction addresses**
+
+**Pipeline:**
+1. **Parse** multi-property addresses → `transaction_address_expansion_parse`
+2. **Geocode** with Google API → `google_geocoded_addresses`
+3. **Quality Review** → flag `needs_manual_review`
+
+**Performance (1,000 transactions tested):**
+- 98.9% success rate (1,900/1,921 addresses)
+- 33.7% multi-property detection rate
+- Resume-safe (can stop/restart without duplicates)
+- 7 comprehensive data quality validation tests
+
+**Next Decision:**
+- Scale to remaining ~5,000 transactions, OR
+- Address 209 city mismatches first (mostly Ottawa/Hamilton amalgamations)
+
 ### 🏗️ Address Normalization - 10 Phase Plan
-**Status:** Phase 0 - Planning complete, ready to start Phase 1
+**Status:** Phase 1 Complete (libpostal), Phase 2+ on hold
 **Goal:** Fix city field garbage using libpostal parsing + NAR validation
 **See:** `COMPREHENSIVE_ADDRESS_STANDARDIZATION_PLAN.md`, `IMPLEMENTATION_PHASES.md`
 
-**Phases:**
-1. Install & test libpostal
-2. Parse transactions table (create `transactions_parsed`)
-3. Parse brand_locations table (create `brand_locations_parsed`)
-4. City verification - postal code lookup
-5. City verification - exact match
-6. City verification - amalgamation (Scarborough → Toronto)
-7. City verification - fuzzy match
-8. Hyphenated address expansion (251-255 → [251, 252, 253, 254, 255])
-9. NAR address validation
-10. Full integration & testing (1000 sample addresses)
-
-**Each phase has checkpoint before proceeding.**
+**Note:** Geocoding pipeline (above) provides immediate value for transaction addresses. Address normalization plan addresses broader city field issues across all properties.
 
 ### ✅ NAR Validation System - COMPLETE (2025-10-03)
 - Background service validates addresses against NAR 2024 database

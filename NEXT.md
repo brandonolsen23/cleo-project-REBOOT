@@ -1,10 +1,68 @@
 # NEXT.md
 
-**Last updated:** 2025-10-03 (Phase 1: libpostal Installation Complete)
+**Last updated:** 2025-10-06 (Geocoding Pipeline Complete)
 
 ---
 
-## What We Completed Today (2025-10-03)
+## What We Completed Today (2025-10-06)
+
+### ✅ **Complete Geocoding Pipeline - PRODUCTION READY** 🎉
+
+**Built a full 3-stage geocoding workflow for RealTrack transaction addresses**
+
+**Pipeline Overview:**
+1. **Parse** multi-property addresses → `transaction_address_expansion_parse`
+2. **Geocode** with Google API → `google_geocoded_addresses`
+3. **Quality Review** → flag `needs_manual_review`
+
+**Test Results (1,000 transactions):**
+- ✅ 1,921 addresses parsed from 1,000 transactions
+- ✅ 1,900 successfully geocoded with postal codes (98.9% success rate)
+- ✅ 21 flagged for manual review (1.1%)
+- ✅ Multi-property detection: 33.7% (647/1,921 addresses)
+
+**Data Quality Validation (7 comprehensive tests):**
+- ✅ Coordinate clustering: 2 clusters detected (likely plazas/city centers)
+- ⚠️ City mismatches: 209 addresses (mostly legitimate amalgamations - Ottawa, Hamilton)
+- ⚠️ Range duplicates: 10 range addresses with identical coordinates (flagged)
+- ✅ Highway addresses: 90.9% success rate (4/44 flagged)
+- ✅ Postal code format: 99.3% valid (14/1,900 minor issues)
+- ✅ Distance anomalies: 1 address detected (Finch Ave W)
+- ✅ Transaction linkage: 100% integrity
+
+**Files Created:**
+- `scripts/parsing/parse_transaction_addresses.py` - Multi-property address parser
+- `scripts/geocoding/geocode_expanded_addresses.py` - Google Geocoding API integration
+- `scripts/quality/review_geocoded_addresses.py` - Post-geocoding quality checks
+- `scripts/validation/data_quality_validation.py` - 7 comprehensive validation tests
+- `scripts/analysis/export_city_mismatches.py` - Export city discrepancies for review
+- `common/multi_property_parser.py` - Handles &, range-dash, comma-separated patterns
+- `common/google_geocoder.py` - Google Geocoding API wrapper
+- `common/enhanced_geocoder.py` - Text Search API fallback (not used in final flow)
+- `common/address_validator.py` - Places API validation (experimental)
+
+**Database Tables Created:**
+- `transaction_address_expansion_parse` - Individual addresses from multi-property parsing
+- `google_geocoded_addresses` - Geocoding results with quality flags
+- `transaction_address_links` - Links transactions to geocoded addresses
+
+**Key Features:**
+- ✅ Resume-safe: Can stop/restart without duplicating work
+- ✅ Multi-property parsing: "471 & 481 KING ST E" → [471 KING ST E, 481 KING ST E]
+- ✅ Range expansion: "9220 - 9226 HWY 93" → [9220, 9222, 9224, 9226]
+- ✅ Quality flagging: Duplicate coordinates, missing postal codes, city-level only results
+- ✅ Rate limiting: 0.3s between Google API calls
+- ✅ Background processing: Long-running tasks continue after terminal disconnect
+
+**Next Steps:**
+- [ ] Review 209 city mismatches manually (/tmp/city_mismatches.csv)
+- [ ] Decide: Scale to remaining ~5,000 transactions or address city mismatches first
+- [ ] Consider: Run quality review script on all geocoded addresses
+- [ ] Optional: Integrate with brand location matching
+
+---
+
+## What We Completed Previously (2025-10-03)
 
 ### ✅ **Phase 1: libpostal Installation & Testing - COMPLETE** 🎉
 
