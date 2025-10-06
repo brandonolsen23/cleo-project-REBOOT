@@ -25,9 +25,7 @@ def export_city_mismatches():
         WHERE g.source_table = 'transaction_address_expansion_parse'
             AND p.original_city_raw IS NOT NULL
             AND p.original_city_raw != g.google_city
-            AND p.original_city_raw NOT LIKE '%York%'
-            AND p.original_city_raw NOT LIKE '%Scarborough%'
-            AND p.original_city_raw NOT LIKE '%Etobicoke%'
+            AND (g.is_amalgamation_match = FALSE OR g.is_amalgamation_match IS NULL)
         ORDER BY p.original_city_raw, g.google_city
     """)
 
@@ -44,13 +42,13 @@ def export_city_mismatches():
         print(f"{orig_city:<20} {geo_city:<20} {orig_addr:<40} {formatted[:48] if formatted else 'N/A':<50}")
 
     # Also save to CSV
-    with open('/tmp/city_mismatches.csv', 'w', newline='') as f:
+    with open('/tmp/unresolved_city_mismatches.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['Original Address', 'Expanded Address', 'Original City', 'Geocoded City', 'Google Formatted Address', 'Postal Code'])
         writer.writerows(rows)
 
     print()
-    print(f"Data also saved to: /tmp/city_mismatches.csv")
+    print(f"Data also saved to: /tmp/unresolved_city_mismatches.csv")
 
     cur.close()
     conn.close()
