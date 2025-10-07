@@ -70,6 +70,7 @@ def parse_transaction_addresses(limit=100):
                 ) VALUES (
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                 )
+                ON CONFLICT (transaction_id, expanded_full_address) DO NOTHING
             """, (
                 tx_id,
                 address_raw,
